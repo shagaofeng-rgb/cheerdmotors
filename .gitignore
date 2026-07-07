@@ -1,0 +1,10 @@
+.next/
+node_modules/
+out/
+dist/
+.env*
+!.env.example
+.DS_Store
+design-reference/
+design-reference-full/
+legacy-site/
