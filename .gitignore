@@ -8,3 +8,4 @@ dist/
 design-reference/
 design-reference-full/
 legacy-site/
+.vercel
