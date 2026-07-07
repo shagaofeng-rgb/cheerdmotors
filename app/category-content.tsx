@@ -393,17 +393,17 @@ function CategoryFooter() {
         </div>
         <div>
           <h3>Support</h3>
-          <a href="#">Contact</a>
-          <a href="#">Manuals</a>
-          <a href="#">Warranty</a>
-          <a href="#">Order Tracking</a>
+          <a href="/#support">Contact</a>
+          <a href="/#support">Manuals</a>
+          <a href="/#support">Warranty</a>
+          <a href="/#support">Order Tracking</a>
         </div>
         <div>
           <h3>Discover</h3>
-          <a href="#">About</a>
-          <a href="#">News</a>
-          <a href="#">Rider Club</a>
-          <a href="#">B2B</a>
+          <a href="/#motorcycle">About</a>
+          <a href="/#products">News</a>
+          <a href="/#bike">Rider Club</a>
+          <Link href="/accessories">B2B</Link>
         </div>
       </div>
       <form className="newsletter">

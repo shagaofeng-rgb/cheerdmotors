@@ -93,11 +93,20 @@ const support = [
   ["Lifetime Support", "Human help for long-term ownership."],
 ];
 
+const productLinks: Record<string, string> = {
+  XTREME: "/electric-dirt-bikes#catalog",
+  XCEED: "/electric-dirt-bikes#catalog",
+  XCITE: "/electric-bikes#catalog",
+  XPLORE: "/electric-bikes#catalog",
+  XPLUS: "/electric-bikes#catalog",
+  "SMART B02": "/electric-wheelchairs#catalog",
+};
+
 export default function Home() {
   return (
     <main className="site-shell">
       <header className="nav-wrap" aria-label="Main navigation">
-        <a className="brand" href="#">
+        <a className="brand" href="/">
           CHEERDMOTO
         </a>
         <nav className="desktop-nav">
@@ -200,7 +209,7 @@ export default function Home() {
               <p>{product.category}</p>
               <div className="card-footer">
                 <strong>{product.price}</strong>
-                <a href="#">Details</a>
+                <a href={productLinks[product.name]}>Details</a>
               </div>
             </article>
           ))}
@@ -222,7 +231,7 @@ export default function Home() {
                     <li key={stat}>{stat}</li>
                   ))}
                 </ul>
-                <a href="#">Compare model</a>
+                <a href="/electric-dirt-bikes#compare">Compare model</a>
               </div>
               <Image
                 src={platform.image}
@@ -276,7 +285,7 @@ export default function Home() {
               <span>motors</span>
             </div>
           </div>
-          <a className="button primary" href="#">
+          <a className="button primary" href="/electric-wheelchairs#catalog">
             View Smart B02
           </a>
         </div>
@@ -303,14 +312,14 @@ export default function Home() {
             </article>
           ))}
         </div>
-        <a className="button dark" href="#">
+        <a className="button dark" href="#support">
           Get product updates
         </a>
       </section>
 
       <footer className="footer-section">
         <div className="footer-brand">
-          <a className="brand cyan" href="#">
+          <a className="brand cyan" href="/">
             CHEERDMOTO
           </a>
           <p>Future mobility / real machines.</p>
@@ -325,17 +334,17 @@ export default function Home() {
           </div>
           <div>
             <h3>Support</h3>
-            <a href="#">Contact</a>
-            <a href="#">Manuals</a>
-            <a href="#">Warranty</a>
-            <a href="#">Order tracking</a>
+            <a href="#support">Contact</a>
+            <a href="#support">Manuals</a>
+            <a href="#support">Warranty</a>
+            <a href="#support">Order tracking</a>
           </div>
           <div>
             <h3>Discover</h3>
-            <a href="#">About</a>
-            <a href="#">News</a>
-            <a href="#">Rider club</a>
-            <a href="#">B2B</a>
+            <a href="#motorcycle">About</a>
+            <a href="#products">News</a>
+            <a href="#bike">Rider club</a>
+            <a href="/accessories">B2B</a>
           </div>
         </div>
         <form className="newsletter">
