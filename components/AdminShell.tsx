@@ -13,6 +13,7 @@ const navItems = [
   { key: "leads", label: "线索/弃单", href: "/admin/leads" },
   { key: "analytics", label: "访问统计", href: "/admin/analytics" },
   { key: "seo", label: "SEO 数据", href: "/admin/seo" },
+  { key: "google-rankings", label: "谷歌排名", href: "/admin/google-rankings" },
   { key: "visitors", label: "访客记录", href: "/admin/visitors" },
   { key: "attribution", label: "来源归因", href: "/admin/attribution" },
   { key: "funnel", label: "转化漏斗", href: "/admin/funnel" },
