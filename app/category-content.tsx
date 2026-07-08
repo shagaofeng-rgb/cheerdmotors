@@ -232,12 +232,12 @@ export function SiteNav() {
         <Link href="/electric-bikes">E-Bike</Link>
         <Link href="/electric-wheelchairs">E-Wheelchair</Link>
         <Link href="/accessories">Accessories</Link>
-        <Link href="/#support">Support</Link>
+        <Link href="/news">News</Link>
       </nav>
       <div className="nav-actions" aria-label="Account actions">
-        <button aria-label="Search">
+        <Link aria-label="Search" href="/search">
           <Search size={18} />
-        </button>
+        </Link>
         <button aria-label="Wishlist">
           <Heart size={18} />
         </button>
@@ -393,7 +393,7 @@ function CategoryFooter() {
         </div>
         <div>
           <h3>Support</h3>
-          <a href="/#support">Contact</a>
+          <a href="/contact">Contact</a>
           <a href="/#support">Manuals</a>
           <a href="/#support">Warranty</a>
           <a href="/#support">Order Tracking</a>
@@ -401,9 +401,9 @@ function CategoryFooter() {
         <div>
           <h3>Discover</h3>
           <a href="/#motorcycle">About</a>
-          <a href="/#products">News</a>
+          <Link href="/news">News</Link>
           <a href="/#bike">Rider Club</a>
-          <Link href="/accessories">B2B</Link>
+          <Link href="/blog">Blog</Link>
         </div>
       </div>
       <form className="newsletter">

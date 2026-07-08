@@ -83,6 +83,29 @@ export type ContentPost = {
   status: PublishStatus;
   createdAt: string;
   updatedAt: string;
+  canonicalUrl?: string;
+  originalTitle?: string;
+  originalLanguage?: string;
+  sourceName?: string;
+  sourceUrl?: string;
+  canonicalSourceUrl?: string;
+  sourcePublishedAt?: string;
+  sourceFetchedAt?: string;
+  sourceTimezone?: string;
+  facts?: string;
+  perspective?: string;
+  customerImpact?: string;
+  ourHelp?: string;
+  geoSummary?: string;
+  faq?: Array<{ question: string; answer: string }>;
+  relatedProductSlugs?: string[];
+  imageAlt?: string;
+  imageSourceUrl?: string;
+  imagePageUrl?: string;
+  automationStatus?: "manual" | "candidate" | "published" | "review_required" | "rejected" | "failed";
+  relevanceScore?: number;
+  trustScore?: number;
+  retryCount?: number;
 };
 
 export type SiteSettings = {
@@ -162,6 +185,14 @@ export async function listAdminMedia() {
 export async function listAdminPosts(type?: ContentType) {
   const posts = (await readAdminStore()).posts;
   return posts.filter((post) => !type || post.type === type).sort((a, b) => b.publishDate.localeCompare(a.publishDate));
+}
+
+export async function listPublishedPosts(type?: ContentType) {
+  return (await listAdminPosts(type)).filter((post) => post.status === "published");
+}
+
+export async function findPublishedPost(type: ContentType, slug: string) {
+  return (await listPublishedPosts(type)).find((post) => post.slug === slug) || null;
 }
 
 function isInsideRange(timestamp: string, filter?: { from?: Date; to?: Date }) {

@@ -114,12 +114,12 @@ export default function Home() {
           <a href="/electric-bikes">E-Bike</a>
           <a href="/electric-wheelchairs">E-Wheelchair</a>
           <a href="/accessories">Accessories</a>
-          <a href="#support">Support</a>
+          <a href="/news">News</a>
         </nav>
         <div className="nav-actions" aria-label="Account actions">
-          <button aria-label="Search">
+          <a aria-label="Search" href="/search">
             <Search size={18} />
-          </button>
+          </a>
           <button aria-label="Wishlist">
             <Heart size={18} />
           </button>
@@ -334,7 +334,7 @@ export default function Home() {
           </div>
           <div>
             <h3>Support</h3>
-            <a href="#support">Contact</a>
+            <a href="/contact">Contact</a>
             <a href="#support">Manuals</a>
             <a href="#support">Warranty</a>
             <a href="#support">Order tracking</a>
@@ -342,9 +342,9 @@ export default function Home() {
           <div>
             <h3>Discover</h3>
             <a href="#motorcycle">About</a>
-            <a href="#products">News</a>
+            <a href="/news">News</a>
             <a href="#bike">Rider club</a>
-            <a href="/accessories">B2B</a>
+            <a href="/blog">Blog</a>
           </div>
         </div>
         <form className="newsletter">
