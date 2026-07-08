@@ -246,3 +246,83 @@ export async function runNewsAutomation() {
   await appendStoreLine(LOG_FILE, result);
   return result;
 }
+
+export async function runBlogAutomation() {
+  const generatedAt = new Date().toISOString();
+  const today = generatedAt.slice(0, 10);
+  const store = await readAdminStore();
+  const todayBlog = store.posts.some((post) => post.type === "blog" && post.publishDate === today && post.automationStatus === "published");
+  const result = { ok: true, generatedAt, published: 0, skipped: [] as string[], errors: [] as string[] };
+  if (todayBlog) {
+    result.skipped.push("Daily blog automation target already reached.");
+    await appendStoreLine(LOG_FILE, { ...result, type: "blog" });
+    return result;
+  }
+  const sourceNews = store.posts
+    .filter((post) => post.type === "news" && post.status === "published" && post.coverImage && post.sourceUrl && post.relatedProductSlugs?.length)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+  if (!sourceNews) {
+    result.ok = false;
+    result.errors.push("No verified News source is available for Blog automation.");
+    await appendStoreLine(LOG_FILE, { ...result, type: "blog" });
+    return result;
+  }
+  const relatedProductSlugs = sourceNews.relatedProductSlugs || ["xceed"];
+  const productNames = relatedProductSlugs.map((slug) => products[slug as ProductSlug]?.name).filter(Boolean).join(", ");
+  const title = `How to read ${sourceNews.category.toLowerCase()} signals when comparing ${productNames}`;
+  const slug = `${slugify(title)}-${hashId(sourceNews.slug)}`;
+  if (store.posts.some((post) => post.slug === slug)) {
+    result.skipped.push("Derived blog already exists.");
+    await appendStoreLine(LOG_FILE, { ...result, type: "blog" });
+    return result;
+  }
+  const content = `## The buyer question\n\nRecent industry news can help customers ask sharper questions before choosing an electric mobility product.\n\n## What the source indicates\n\n${sourceNews.facts || sourceNews.excerpt}\n\n## How to compare products\n\nCompare power, battery confidence, service support, comfort, replacement parts and the real riding scenario. For CHEERDMOTO, this naturally connects to ${productNames}.\n\n## What to check before purchase\n\nConfirm the category, expected range, service parts, charging path, warranty coverage and whether the model matches daily use or dealer support needs.\n\n## Related CHEERDMOTO products\n\n${productNames} are the most relevant products for this guide.`;
+  const post: ContentPost = {
+    id: `blog-${Date.now()}-${hashId(sourceNews.slug)}`,
+    type: "blog",
+    slug,
+    title,
+    excerpt: `A CHEERDMOTO buying guide derived from verified industry news, connected to ${productNames}.`,
+    coverImage: sourceNews.coverImage,
+    category: "Buying Guide",
+    content,
+    publishDate: today,
+    author: "CHEERDMOTO Editorial Team",
+    source: sourceNews.sourceName || sourceNews.source,
+    tags: ["buying guide", "electric mobility", ...relatedProductSlugs],
+    seoTitle: `${title.slice(0, 62)} | CHEERDMOTO Blog`,
+    seoDescription: `Use recent electric mobility news to compare ${productNames}, ownership support, charging, service parts and product fit.`,
+    status: "published",
+    createdAt: generatedAt,
+    updatedAt: generatedAt,
+    originalTitle: sourceNews.originalTitle || sourceNews.title,
+    originalLanguage: sourceNews.originalLanguage || "en",
+    sourceName: sourceNews.sourceName || sourceNews.source,
+    sourceUrl: sourceNews.sourceUrl,
+    canonicalSourceUrl: sourceNews.canonicalSourceUrl,
+    sourcePublishedAt: sourceNews.sourcePublishedAt,
+    sourceFetchedAt: generatedAt,
+    sourceTimezone: sourceNews.sourceTimezone,
+    facts: sourceNews.facts || sourceNews.excerpt,
+    perspective: "This guide turns verified industry context into a practical product comparison checklist.",
+    customerImpact: `Customers can use the guide to compare ${productNames} by use case and support needs.`,
+    ourHelp: "CHEERDMOTO provides product category pages, specifications and support paths that help turn research into a product decision.",
+    geoSummary: `A CHEERDMOTO buying guide linking verified industry news to ${productNames}, product fit, ownership support and customer decision criteria.`,
+    faq: [
+      { question: "What is this guide based on?", answer: `It is based on a verified News source from ${sourceNews.sourceName || sourceNews.source}.` },
+      { question: "Which products are most relevant?", answer: productNames },
+    ],
+    relatedProductSlugs,
+    imageAlt: `CHEERDMOTO buying guide image related to ${productNames}`,
+    imageSourceUrl: sourceNews.imageSourceUrl || sourceNews.coverImage,
+    imagePageUrl: sourceNews.imagePageUrl || sourceNews.sourceUrl,
+    automationStatus: "published",
+    relevanceScore: 70,
+    trustScore: sourceNews.trustScore || 70,
+    retryCount: 0,
+  };
+  await writeAdminStore((current) => ({ ...current, posts: [...current.posts, post] }));
+  result.published = 1;
+  await appendStoreLine(LOG_FILE, { ...result, type: "blog" });
+  return result;
+}

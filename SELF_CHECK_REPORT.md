@@ -35,6 +35,7 @@ Date: 2026-07-08
 - Added dynamic sitemap: `/sitemap.xml`.
 - Added robots policy: `/robots.txt`.
 - Added News automation route: `/api/cron/news`.
+- Added Blog automation route: `/api/cron/blog`.
 - Added Vercel Cron configuration in `vercel.json`.
 - Added News automation service with:
   - RSS source fetching.
@@ -47,7 +48,8 @@ Date: 2026-07-08
   - Source image requirement.
   - SEO title and meta description generation.
   - GEO summary and FAQ fields.
-  - Audit log writing.
+- Audit log writing.
+- Added Blog automation that derives buying-guide articles from already verified News sources without inventing sources or images.
 - Fixed homepage/category navigation to link to real News, Blog, Search and Contact routes.
 - Added responsive content page styles.
 
@@ -105,7 +107,7 @@ Optional News automation variables:
 ## Known Limits
 
 - News automation uses public RSS feeds and rule-based analysis. If a source feed has no valid date, no image, or no related product signal, the item is skipped rather than fabricated.
-- Blog automation is not fully implemented as a separate daily content generator; existing Blog CMS and public Blog pages are available.
+- Blog automation is conservative: it only publishes when at least one verified News source exists.
 - Email notification for inquiries is still pending SMTP or Resend credentials.
 - Real payment gateway is still pending provider credentials and business decision.
 
