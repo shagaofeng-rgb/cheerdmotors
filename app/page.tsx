@@ -347,17 +347,18 @@ export default function Home() {
             <a href="/blog">Blog</a>
           </div>
         </div>
-        <form className="newsletter">
+        <form className="newsletter" action="/api/newsletter/subscribe" method="post">
           <h3>Newsletter</h3>
+          <input type="hidden" name="source" value="homepage-footer" />
           <label>
             <span>Email address</span>
-            <input type="email" placeholder="Email address" />
+            <input type="email" name="email" placeholder="Email address" required />
           </label>
           <button type="submit">Subscribe</button>
         </form>
         <div className="legal">
           <span>© 2026 CHEERDMOTO. All rights reserved.</span>
-          <span>Privacy / Terms</span>
+          <span><a href="/privacy">Privacy</a> / <a href="/terms">Terms</a></span>
         </div>
       </footer>
     </main>

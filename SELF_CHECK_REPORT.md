@@ -52,6 +52,9 @@ Date: 2026-07-08
 - Added Blog automation that derives buying-guide articles from already verified News sources without inventing sources or images.
 - Fixed homepage/category navigation to link to real News, Blog, Search and Contact routes.
 - Added responsive content page styles.
+- Added inquiry email notification adapter through Resend. Inquiries are saved first, then email delivery is attempted and logged without blocking the customer submission.
+- Added newsletter subscriber API and connected footer forms to persistent storage.
+- Added public Privacy Policy and Terms of Service pages and included them in the sitemap.
 
 ## Environment Variables
 
@@ -70,6 +73,12 @@ Configured previously:
 Added for this pass:
 
 - `CRON_SECRET`
+
+New optional lead notification variables:
+
+- `RESEND_API_KEY`
+- `RESEND_FROM`
+- `ADMIN_NOTIFICATION_EMAIL` or `INQUIRY_RECEIVER_EMAIL`
 
 Optional News automation variables:
 
@@ -108,7 +117,7 @@ Optional News automation variables:
 
 - News automation uses public RSS feeds and rule-based analysis. If a source feed has no valid date, no image, or no related product signal, the item is skipped rather than fabricated.
 - Blog automation is conservative: it only publishes when at least one verified News source exists.
-- Email notification for inquiries is still pending SMTP or Resend credentials.
+- Email notification code is complete through Resend; live sending requires `RESEND_API_KEY` and a verified sender/domain in Resend.
 - Real payment gateway is still pending provider credentials and business decision.
 
 ## Deployment Checklist
@@ -118,4 +127,5 @@ Optional News automation variables:
 - Deploy to Vercel Production.
 - Verify `/api/health`.
 - Verify `/news`, `/blog`, `/sitemap.xml`, `/robots.txt`.
+- Verify `/privacy`, `/terms`, `/api/newsletter/subscribe` and `/api/contact/inquiry`.
 - Run `/api/cron/news` with bearer token only for manual validation.
