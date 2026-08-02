@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Heart, Menu, Search, ShoppingBag, UserRound } from "lucide-react";
+import SiteNav from "@/components/SiteNav";
 
 const products = [
   {
@@ -94,46 +94,18 @@ const support = [
 ];
 
 const productLinks: Record<string, string> = {
-  XTREME: "/electric-dirt-bikes#catalog",
-  XCEED: "/electric-dirt-bikes#catalog",
-  XCITE: "/electric-bikes#catalog",
-  XPLORE: "/electric-bikes#catalog",
-  XPLUS: "/electric-bikes#catalog",
-  "SMART B02": "/electric-wheelchairs#catalog",
+  XTREME: "/products/xtreme",
+  XCEED: "/products/xceed",
+  XCITE: "/products/xcite",
+  XPLORE: "/products/xplore",
+  XPLUS: "/products/xplus",
+  "SMART B02": "/products/smart-b02",
 };
 
 export default function Home() {
   return (
     <main className="site-shell">
-      <header className="nav-wrap" aria-label="Main navigation">
-        <a className="brand" href="/">
-          CHEERDMOTO
-        </a>
-        <nav className="desktop-nav">
-          <a href="/electric-dirt-bikes">E-Motorcycle</a>
-          <a href="/electric-bikes">E-Bike</a>
-          <a href="/electric-wheelchairs">E-Wheelchair</a>
-          <a href="/accessories">Accessories</a>
-          <a href="/news">News</a>
-        </nav>
-        <div className="nav-actions" aria-label="Account actions">
-          <a aria-label="Search" href="/search">
-            <Search size={18} />
-          </a>
-          <button aria-label="Wishlist">
-            <Heart size={18} />
-          </button>
-          <button aria-label="Account">
-            <UserRound size={18} />
-          </button>
-          <button aria-label="Cart">
-            <ShoppingBag size={18} />
-          </button>
-          <button className="mobile-menu" aria-label="Open menu">
-            <Menu size={20} />
-          </button>
-        </div>
-      </header>
+      <SiteNav />
 
       <section className="hero-section" id="motorcycle">
         <div className="hero-copy">

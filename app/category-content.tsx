@@ -1,8 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, Menu, Search, ShoppingBag, UserRound } from "lucide-react";
+import { Heart } from "lucide-react";
+import SiteNavComponent from "@/components/SiteNav";
+
+export { default as SiteNav } from "@/components/SiteNav";
 
 type CategoryProduct = {
+  slug?: string;
   badge?: string;
   image: string;
   name: string;
@@ -56,6 +60,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
     products: [
       {
         badge: "Sale",
+        slug: "xtreme",
         image: "/volt-lab/category/dirt-bikes/dirt_bikes_use_product_card_01.png",
         name: "Xtreme Performance 96V Electric Dirt Bike",
         price: "$4,499.00",
@@ -63,6 +68,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
       },
       {
         badge: "Sale",
+        slug: "xceed",
         image: "/volt-lab/category/dirt-bikes/dirt_bikes_use_product_card_02.png",
         name: "Xceed 72V Electric Dirt Bike",
         price: "$2,099.00",
@@ -70,6 +76,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
       },
       {
         badge: "Sale",
+        slug: "xceed",
         image: "/volt-lab/category/dirt-bikes/dirt_bikes_use_product_card_03.png",
         name: "Xceed 72V Electric Dirt Bike - Blaze Orange",
         price: "$2,099.00",
@@ -106,6 +113,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
     products: [
       {
         badge: "Step-Thru",
+        slug: "xcite",
         image: "/volt-lab/category/e-bikes/e_bike_use_product_card_01.png",
         name: "Xcite Step-Thru Electric Bike",
         price: "$499.00",
@@ -113,6 +121,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
       },
       {
         badge: "Fat Tire",
+        slug: "xplore",
         image: "/volt-lab/category/e-bikes/e_bike_use_product_card_02.png",
         name: "Xplore Fat Tire E-Bike",
         price: "$499.00",
@@ -120,6 +129,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
       },
       {
         badge: "Moped Style",
+        slug: "xplus",
         image: "/volt-lab/category/e-bikes/e_bike_use_product_card_03.png",
         name: "Xplus Fat Tire Moped E-Bike",
         price: "From $599.00",
@@ -156,6 +166,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
     products: [
       {
         badge: "In stock",
+        slug: "smart-b02",
         image: "/volt-lab/category/wheelchairs/electric_wheelchair_use_product_main.png",
         name: "Smart B02 Electric Wheelchair",
         price: "$399.00",
@@ -212,6 +223,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
       price:
         ["$1,199.00", "$29.00", "$49.00", "$29.00", "$49.00", "From $59.00", "From $69.00", "$249.00", "$39.00", "$69.00", "$199.00", "$79.00", "$29.00", "$69.00", "$29.00"][index],
       specs: ["CHEERDMOTO"],
+      slug: index === 0 ? "battery-pack" : index === 1 ? "brake-kit" : index === 7 ? "smart-charger" : undefined,
       badge: index === 2 || index === 8 || index === 14 ? "Sale" : undefined,
     })),
     compareTitle: "Keep your ride peak-ready",
@@ -221,44 +233,10 @@ export const categoryPages: Record<string, CategoryPageData> = {
   },
 };
 
-export function SiteNav() {
-  return (
-    <header className="nav-wrap" aria-label="Main navigation">
-      <Link className="brand" href="/">
-        CHEERDMOTO
-      </Link>
-      <nav className="desktop-nav">
-        <Link href="/electric-dirt-bikes">E-Motorcycle</Link>
-        <Link href="/electric-bikes">E-Bike</Link>
-        <Link href="/electric-wheelchairs">E-Wheelchair</Link>
-        <Link href="/accessories">Accessories</Link>
-        <Link href="/news">News</Link>
-      </nav>
-      <div className="nav-actions" aria-label="Account actions">
-        <Link aria-label="Search" href="/search">
-          <Search size={18} />
-        </Link>
-        <button aria-label="Wishlist">
-          <Heart size={18} />
-        </button>
-        <button aria-label="Account">
-          <UserRound size={18} />
-        </button>
-        <button aria-label="Cart">
-          <ShoppingBag size={18} />
-        </button>
-        <button className="mobile-menu" aria-label="Open menu">
-          <Menu size={20} />
-        </button>
-      </div>
-    </header>
-  );
-}
-
 export function CategoryPage({ data }: { data: CategoryPageData }) {
   return (
     <main className="category-shell">
-      <SiteNav />
+      <SiteNavComponent />
       <section className="category-hero">
         <div className="category-copy">
           <p className="eyebrow">{data.eyebrow}</p>
@@ -289,18 +267,11 @@ export function CategoryPage({ data }: { data: CategoryPageData }) {
       </section>
 
       <section className="catalog-section" id="catalog">
-        <aside className="filter-panel">
-          <div className="filter-title">
-            <strong>Filters</strong>
-            <button>Reset All</button>
-          </div>
-          {data.filters.map((filter) => (
-            <div className="filter-row" key={filter}>
-              <span>{filter}</span>
-              <i />
-            </div>
-          ))}
-          <button className="button primary">Apply filters</button>
+        <aside className="filter-panel catalog-guide">
+          <div className="filter-title"><strong>Shop this collection</strong></div>
+          <p>Compare the available models, then open a product page for configuration, pricing and checkout.</p>
+          {data.filters.map((filter) => <span className="filter-row" key={filter}>{filter}</span>)}
+          <Link className="button primary" href="/contact">Need help choosing?</Link>
         </aside>
 
         <div className="catalog-main">
@@ -318,14 +289,14 @@ export function CategoryPage({ data }: { data: CategoryPageData }) {
                 <Image src={product.image} alt={product.name} width={320} height={360} />
                 <small>CHEERDMOTO</small>
                 <h2>{product.name}</h2>
-                <div className="rating">★★★★★ <span>(28)</span></div>
+                <div className="rating">Customer reviews will be available soon.</div>
                 <div className="spec-pills">
                   {product.specs.map((spec) => (
                     <span key={spec}>{spec}</span>
                   ))}
                 </div>
                 <strong className="price">{product.price}</strong>
-                <button className="quick-add">Quick add</button>
+                <Link className="quick-add" href={product.slug ? `/products/${product.slug}` : "/contact"}>{product.slug ? "View details" : "Contact us"}</Link>
               </article>
             ))}
           </div>

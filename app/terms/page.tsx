@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import SiteNav from "@/components/SiteNav";
 
 export const metadata: Metadata = {
   title: "Terms of Service | CHEERDMOTO",
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <main className="content-page legal-page">
+      <SiteNav />
       <section className="content-hero">
         <p className="eyebrow">Terms</p>
         <h1>Terms of Service</h1>

@@ -27,6 +27,9 @@ export type StoreOrder = {
   id: string;
   productSlug: CheckoutProductSlug;
   productName: string;
+  variantId?: string;
+  variantLabel?: string;
+  variantSku?: string;
   quantity: number;
   unitPrice: number;
   currency: "USD";
@@ -156,21 +159,30 @@ function withOrderDefaults(order: StoreOrder): StoreOrder {
 
 export async function createStoreOrder(input: {
   productSlug: CheckoutProductSlug;
+  variantId?: string;
   quantity: number;
   paymentMethod?: PaymentMethod;
   customer: StoreOrder["customer"];
   checkout?: Partial<StoreOrder["checkout"]>;
 }) {
   const product = products[input.productSlug];
+  const variant = product.variants?.find((item) => item.id === input.variantId) || product.variants?.[0] || null;
   const quantity = Math.max(1, Math.min(99, Number(input.quantity || 1)));
-  const subtotal = product.priceAmount * quantity;
+  const availableInventory = variant?.inventory ?? product.inventory ?? 99;
+  const finalQuantity = Math.min(quantity, Math.max(0, availableInventory));
+  if (finalQuantity < 1) throw new Error("Product is out of stock");
+  const unitPrice = variant?.priceAmount || product.priceAmount;
+  const subtotal = unitPrice * finalQuantity;
   const now = new Date().toISOString();
   const order: StoreOrder = {
     id: await generateStoreOrderId(),
     productSlug: input.productSlug,
     productName: product.name,
-    quantity,
-    unitPrice: product.priceAmount,
+    variantId: variant?.id,
+    variantLabel: variant?.label,
+    variantSku: variant?.sku,
+    quantity: finalQuantity,
+    unitPrice,
     currency: "USD",
     subtotal,
     shippingEstimate: 0,

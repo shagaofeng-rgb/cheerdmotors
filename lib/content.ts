@@ -65,10 +65,7 @@ export function fallbackRelatedProducts(text: string, max = 3) {
 export function productUrl(slug: string) {
   const product = products[slug as ProductSlug];
   if (!product) return "/";
-  if (product.category === "Electric Dirt Bikes") return "/electric-dirt-bikes#catalog";
-  if (product.category === "Electric Bikes") return "/electric-bikes#catalog";
-  if (product.category === "Electric Wheelchairs") return "/electric-wheelchairs#catalog";
-  return "/accessories#catalog";
+  return `/products/${product.slug}`;
 }
 
 export function markdownToBlocks(markdown: string) {

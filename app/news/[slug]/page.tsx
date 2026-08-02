@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { findPublishedPost } from "@/lib/backendStore";
 import { absoluteUrl, markdownToBlocks, postPath, productUrl } from "@/lib/content";
 import { products, type ProductSlug } from "@/lib/site";
+import SiteNav from "@/components/SiteNav";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +42,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
   };
   return (
     <main className="content-site">
-      <header className="content-nav"><Link href="/">CHEERDMOTO</Link><nav><Link href="/news">News</Link><Link href="/blog">Blog</Link><Link href="/search">Search</Link></nav></header>
+      <SiteNav />
       <article className="article-shell">
         <nav className="breadcrumbs"><Link href="/">Home</Link><span>/</span><Link href="/news">News</Link><span>/</span><span>{post.title}</span></nav>
         <p className="eyebrow">{post.category}</p>

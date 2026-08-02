@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { findPublishedPost } from "@/lib/backendStore";
 import { absoluteUrl, markdownToBlocks, postPath, productUrl } from "@/lib/content";
 import { products, type ProductSlug } from "@/lib/site";
+import SiteNav from "@/components/SiteNav";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
   const jsonLd = { "@context": "https://schema.org", "@type": "BlogPosting", headline: post.title, description: post.seoDescription || post.excerpt, image: [absoluteUrl(post.coverImage)], datePublished: post.createdAt, dateModified: post.updatedAt, author: { "@type": "Organization", name: post.author || "CHEERDMOTO" }, publisher: { "@type": "Organization", name: "CHEERDMOTO", url: absoluteUrl("/") }, mainEntityOfPage: absoluteUrl(postPath(post)), about: related.map((product) => product.name) };
   return (
     <main className="content-site">
-      <header className="content-nav"><Link href="/">CHEERDMOTO</Link><nav><Link href="/news">News</Link><Link href="/blog">Blog</Link><Link href="/search">Search</Link></nav></header>
+      <SiteNav />
       <article className="article-shell">
         <nav className="breadcrumbs"><Link href="/">Home</Link><span>/</span><Link href="/blog">Blog</Link><span>/</span><span>{post.title}</span></nav>
         <p className="eyebrow">{post.category}</p><h1>{post.title}</h1><p className="article-summary">{post.excerpt}</p>

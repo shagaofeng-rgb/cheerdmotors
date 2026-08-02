@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import SiteNav from "@/components/SiteNav";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | CHEERDMOTO",
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <main className="content-page legal-page">
+      <SiteNav />
       <section className="content-hero">
         <p className="eyebrow">Privacy</p>
         <h1>Privacy Policy</h1>

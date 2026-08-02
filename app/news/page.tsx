@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { listPublishedPosts } from "@/lib/backendStore";
 import { absoluteUrl, postPath } from "@/lib/content";
+import SiteNav from "@/components/SiteNav";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,7 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
   const categories = [...new Set((await listPublishedPosts("news")).map((post) => post.category).filter(Boolean))];
   return (
     <main className="content-site">
-      <header className="content-nav"><Link href="/">CHEERDMOTO</Link><nav><Link href="/news">News</Link><Link href="/blog">Blog</Link><Link href="/search">Search</Link></nav></header>
+      <SiteNav />
       <section className="content-hero">
         <p className="eyebrow">Global News</p>
         <h1>Electric mobility news, filtered for product decisions.</h1>
