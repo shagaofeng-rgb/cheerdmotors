@@ -7,8 +7,8 @@
       "schedule": "0 8 * * *"
     },
     {
-      "path": "/api/cron/blog",
-      "schedule": "30 8 * * *"
+      "path": "/api/cron/google-search",
+      "schedule": "0 9 */3 * *"
     }
   ]
 }

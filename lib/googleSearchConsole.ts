@@ -1,7 +1,9 @@
 import crypto from "node:crypto";
-import { readStoreObject, writeStoreObject } from "@/lib/durableStore";
+import { appendStoreLine, readStoreLines, readStoreObject, writeStoreObject } from "@/lib/durableStore";
 
 const GSC_STORE_FILE = "google-search-console.json";
+const GSC_SYNC_LOG_FILE = "google-search-sync-log.jsonl";
+const GOOGLE_SYNC_MINIMUM_INTERVAL_MS = 72 * 60 * 60 * 1000;
 const GSC_SCOPE = "https://www.googleapis.com/auth/webmasters.readonly";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 
@@ -189,4 +191,40 @@ export async function syncGoogleSearchConsole(formData?: FormData) {
   };
   await writeStoreObject(GSC_STORE_FILE, snapshot);
   return snapshot;
+}
+
+type GoogleSearchSyncLog = {
+  at: string;
+  ok: boolean;
+  action: "synced" | "skipped" | "failed";
+  reason: string;
+  startDate?: string;
+  endDate?: string;
+  rowCount?: number;
+};
+
+export async function runScheduledGoogleSearchSync() {
+  const at = new Date().toISOString();
+  const logs = await readStoreLines<GoogleSearchSyncLog>(GSC_SYNC_LOG_FILE);
+  const previous = logs.filter((entry) => entry.ok && entry.action === "synced").sort((a, b) => b.at.localeCompare(a.at))[0];
+  if (previous && Date.parse(at) - Date.parse(previous.at) < GOOGLE_SYNC_MINIMUM_INTERVAL_MS) {
+    const result = { ok: true, action: "skipped" as const, at, reason: "Last successful Google Search Console sync is less than 72 hours old." };
+    await appendStoreLine(GSC_SYNC_LOG_FILE, result);
+    return result;
+  }
+  try {
+    const snapshot = await syncGoogleSearchConsole();
+    if (snapshot.error) {
+      const result = { ok: false, action: "failed" as const, at, reason: snapshot.error };
+      await appendStoreLine(GSC_SYNC_LOG_FILE, result);
+      return result;
+    }
+    const result = { ok: true, action: "synced" as const, at, reason: "Google Search Console data synchronized.", startDate: snapshot.startDate, endDate: snapshot.endDate, rowCount: snapshot.queryPages.length };
+    await appendStoreLine(GSC_SYNC_LOG_FILE, result);
+    return result;
+  } catch (error) {
+    const result = { ok: false, action: "failed" as const, at, reason: error instanceof Error ? error.message : "Google Search Console sync failed." };
+    await appendStoreLine(GSC_SYNC_LOG_FILE, result);
+    return result;
+  }
 }
