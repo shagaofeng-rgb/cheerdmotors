@@ -8,5 +8,6 @@ dist/
 design-reference/
 design-reference-full/
 legacy-site/
+backups/
 .vercel
 .data/

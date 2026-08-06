@@ -4,4 +4,5 @@ node_modules
 legacy-site
 design-reference
 design-reference-full
+backups
 *.log
