@@ -21,6 +21,10 @@ function response(code: 0 | 1, msg: string) {
   return Response.json({ code, msg }, { headers: { "Cache-Control": "no-store" } });
 }
 
+function webhookSecret() {
+  return process.env.WEBHOOK_ARTICLE_SIGN || "";
+}
+
 function equalSecret(received: string, expected: string) {
   if (!received || !expected) return false;
   const receivedBuffer = Buffer.from(received);
@@ -66,8 +70,14 @@ async function parsePayload(request: Request): Promise<ArticlePayload> {
 export function GET(request: Request) {
   const search = new URL(request.url).searchParams;
   const sign = search.get("sign") || search.get("api_key") || search.get("apiKey") || search.get("API_KEY") || "";
-  if (sign && !equalSecret(sign, process.env.BLOG_WEBHOOK_API_KEY || "")) return response(0, "API KEY错误");
+  if (sign && !equalSecret(sign, webhookSecret())) return response(0, "API KEY错误");
   return response(1, "Webhook endpoint ready");
+}
+
+function verificationPayload(payload: ArticlePayload) {
+  const plainContent = cleanText(payload.content);
+  const placeholder = /^(test|testing|title|content|placeholder|测试|验证|标题|正文|内容)$/i;
+  return !payload.title || !plainContent || payload.title.length < 2 || plainContent.length < 12 || (placeholder.test(payload.title) && placeholder.test(plainContent));
 }
 
 function validImageUrl(value: string) {
@@ -96,10 +106,10 @@ export async function POST(request: Request) {
     return response(0, "请求参数格式错误");
   }
 
-  if (!equalSecret(payload.sign, process.env.BLOG_WEBHOOK_API_KEY || "")) return response(0, "API KEY错误");
+  if (!equalSecret(payload.sign, webhookSecret())) return response(0, "API KEY错误");
   if (payload.classId !== "blog") return response(0, "class_id仅支持blog");
-  if (payload.title.length < 2) return response(0, "文章标题至少需要2个字符");
-  if (!payload.content) return response(0, "文章内容不能为空");
+  // The custom-framework plugin sends a signed probe with no article, or short placeholders, before publishing.
+  if (verificationPayload(payload)) return response(1, "验证成功");
   if (!validImageUrl(payload.imageUrl)) return response(0, "image_url必须是http、https或站内相对地址");
 
   const now = new Date().toISOString();
@@ -130,13 +140,11 @@ export async function POST(request: Request) {
   };
 
   try {
-    let created = false;
     await writeAdminStore((store) => {
       if (store.posts.some((item) => item.canonicalUrl === canonicalUrl)) return store;
-      created = true;
       return { ...store, posts: [...store.posts, post] };
     });
-    return response(1, created ? "发布成功" : "文章已存在，未重复发布");
+    return response(1, "发布成功");
   } catch {
     return response(0, "数据录入失败，请重试");
   }
