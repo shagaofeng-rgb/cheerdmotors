@@ -14,11 +14,13 @@ Send `application/x-www-form-urlencoded` (JSON is also accepted). The response a
 
 Failed requests return `code: 0` and a reason in `msg`.
 
+`GET` is also available for plugin connection checks and returns HTTP 200 with a JSON readiness response. It never creates an article.
+
 ## Fields
 
 | Field | Required | Notes |
 | --- | --- | --- |
-| `sign` | Yes | Long-lived API key stored only in the production environment. |
+| `sign` | Yes | Long-lived API key stored only in the production environment. `api_key`, `apiKey`, and `API_KEY` are accepted as compatibility aliases. |
 | `class_id` | Yes | Must be exactly `blog`. |
 | `title` | Yes | 2 to 220 characters. |
 | `content` | Yes | Plain text or Markdown, up to 30,000 characters. |

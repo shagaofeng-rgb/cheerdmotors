@@ -32,6 +32,14 @@ function value(record: Record<string, unknown>, key: string, limit: number) {
   return String(record[key] || "").trim().slice(0, limit);
 }
 
+function firstValue(record: Record<string, unknown>, keys: string[], limit: number) {
+  for (const key of keys) {
+    const found = value(record, key, limit);
+    if (found) return found;
+  }
+  return "";
+}
+
 async function parsePayload(request: Request): Promise<ArticlePayload> {
   const contentType = request.headers.get("content-type") || "";
   let raw: Record<string, unknown>;
@@ -45,13 +53,21 @@ async function parsePayload(request: Request): Promise<ArticlePayload> {
   }
 
   return {
-    sign: value(raw, "sign", 256),
+    // Some webhook clients label the configured API key differently. The documented `sign` name remains primary.
+    sign: firstValue(raw, ["sign", "api_key", "apiKey", "API_KEY"], 256),
     classId: value(raw, "class_id", 80).toLowerCase(),
     title: value(raw, "title", 220),
     content: value(raw, "content", MAX_CONTENT_LENGTH),
     authorId: value(raw, "author_id", 120),
     imageUrl: value(raw, "image_url", 1_000),
   };
+}
+
+export function GET(request: Request) {
+  const search = new URL(request.url).searchParams;
+  const sign = search.get("sign") || search.get("api_key") || search.get("apiKey") || search.get("API_KEY") || "";
+  if (sign && !equalSecret(sign, process.env.BLOG_WEBHOOK_API_KEY || "")) return response(0, "API KEY错误");
+  return response(1, "Webhook endpoint ready");
 }
 
 function validImageUrl(value: string) {
