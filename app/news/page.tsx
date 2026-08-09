@@ -35,7 +35,7 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
             <img src={post.coverImage} alt={post.imageAlt || post.title} />
             <div><span>{post.publishDate} · {post.category}</span><h2><Link href={postPath(post)}>{post.title}</Link></h2><p>{post.excerpt}</p><small>Source: {post.sourceName || post.source || "CHEERDMOTO"}</small></div>
           </article>
-        )) : <article className="content-empty"><h2>No published news yet</h2><p>The automation publishes only when a verified source, source date, image and product match are available.</p></article>}
+        )) : <article className="content-empty"><h2>No published news yet</h2><p>Published news will appear here.</p></article>}
       </section>
     </main>
   );
