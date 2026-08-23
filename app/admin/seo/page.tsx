@@ -1,6 +1,8 @@
 import AdminShell from "@/components/AdminShell";
 import { zhPublishStatus } from "@/lib/adminZh";
 import { listAdminCategories, listAdminPosts, listAdminProducts } from "@/lib/backendStore";
+import { AdminListControls, AdminPagination } from "@/components/AdminListControls";
+import { paginate, parseAdminListQuery } from "@/lib/adminList";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +12,8 @@ function seoState(title: string, description: string) {
   return { label: "正常", className: "published" };
 }
 
-export default async function AdminSeoPage() {
+export default async function AdminSeoPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const query = parseAdminListQuery(await searchParams);
   const [products, categories, posts] = await Promise.all([listAdminProducts(), listAdminCategories(), listAdminPosts()]);
   const rows = [
     ...products.map((item) => ({
@@ -46,6 +49,8 @@ export default async function AdminSeoPage() {
   ];
   const optimized = rows.filter((row) => seoState(row.title, row.description).className === "published").length;
   const needsWork = rows.length - optimized;
+  const filteredRows = rows.filter((row) => !query.search || `${row.name} ${row.slug} ${row.type} ${row.title} ${row.description}`.toLowerCase().includes(query.search.toLowerCase()));
+  const page = paginate(filteredRows, query);
 
   return (
     <AdminShell active="seo">
@@ -62,11 +67,12 @@ export default async function AdminSeoPage() {
       </div>
       <section className="admin-panel">
         <div><p className="eyebrow">SEO 清单</p><h2>页面元数据</h2></div>
+        <AdminListControls action="/admin/seo" query={query} />
         <div className="admin-table-wrap">
           <table>
             <thead><tr><th>页面</th><th>类型</th><th>发布状态</th><th>SEO 状态</th><th>Title</th><th>Description</th><th>更新</th></tr></thead>
             <tbody>
-              {rows.length ? rows.map((row) => {
+              {page.items.length ? page.items.map((row) => {
                 const state = seoState(row.title, row.description);
                 return (
                   <tr key={`${row.type}-${row.id}`}>
@@ -79,10 +85,11 @@ export default async function AdminSeoPage() {
                     <td>{row.updatedAt.slice(0, 10)}</td>
                   </tr>
                 );
-              }) : <tr><td colSpan={7}>暂无 SEO 数据。</td></tr>}
+              }) : <tr><td colSpan={7}>没有符合条件的 SEO 数据。</td></tr>}
             </tbody>
           </table>
         </div>
+        <AdminPagination action="/admin/seo" query={query} {...page} />
       </section>
     </AdminShell>
   );
