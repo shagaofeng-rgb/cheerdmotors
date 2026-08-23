@@ -21,6 +21,15 @@ function getSessionId() {
   return created;
 }
 
+function sessionLandingPage() {
+  const key = "cheerdmotors_session_landing_page";
+  const existing = window.sessionStorage.getItem(key);
+  if (existing) return existing;
+  const created = `${window.location.pathname}${window.location.search}`;
+  window.sessionStorage.setItem(key, created);
+  return created;
+}
+
 function deviceType() {
   const width = window.innerWidth;
   if (width < 720) return "Mobile";
@@ -47,6 +56,8 @@ export default function AnalyticsTracker() {
         device: deviceType(),
         browser: navigator.userAgent,
         os: navigator.platform,
+        landingPage: sessionLandingPage(),
+        environment: window.location.hostname,
         payload: {},
       }),
       keepalive: true,

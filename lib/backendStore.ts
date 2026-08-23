@@ -2,6 +2,7 @@ import path from "node:path";
 import { readStoreObject, writeStoreObject } from "@/lib/durableStore";
 import { products, productSlugs, type ProductSlug } from "@/lib/site";
 import { readAnalyticsEvents, readStoreOrders, type AnalyticsEvent, type StoreOrder } from "@/lib/commerceStore";
+import { buildVisitorProfiles, channelForEvent, enrichEvent, groupCounts, isRealEvent, trafficTrend } from "@/lib/trafficAnalytics";
 
 const STORE_FILE = "admin-store.json";
 
@@ -206,7 +207,8 @@ function isInsideRange(timestamp: string, filter?: { from?: Date; to?: Date }) {
 export async function getAdminDashboardData(filter?: { from?: Date; to?: Date }) {
   const [store, orders, events] = await Promise.all([readAdminStore(), readStoreOrders(), readAnalyticsEvents()]);
   const filteredOrders = orders.filter((order) => isInsideRange(order.createdAt, filter));
-  const filteredEvents = events.filter((event) => isInsideRange(event.timestamp, filter));
+  const scopedEvents = events.filter((event) => isInsideRange(event.timestamp, filter));
+  const filteredEvents = scopedEvents.filter(isRealEvent);
   const leads = buildCustomerLeads(filteredOrders, filteredEvents);
   const paidOrders = filteredOrders.filter((order) => ["paid", "processing", "shipped", "delivered", "completed"].includes(order.status));
   const productViews = filteredEvents.filter((event) => event.type === "product_view").length;
@@ -229,11 +231,19 @@ export async function getAdminDashboardData(filter?: { from?: Date; to?: Date })
     },
     orders: filteredOrders.slice(-12).reverse(),
     events: filteredEvents.slice(-24).reverse(),
+    allEvents: scopedEvents,
     leads,
     funnel: buildFunnel(filteredEvents, filteredOrders),
     popularProducts: countBy([...filteredOrders.map((order) => order.productName), ...filteredEvents.map((event) => String(event.payload?.productSlug || event.payload?.product || "")).filter(Boolean)]),
-    trafficSources: countBy(filteredEvents.map((event) => event.referrer || "直接访问")),
-    countries: countBy([...filteredOrders.map((order) => order.customer.country), ...filteredEvents.map((event) => event.country)]),
+    trafficSources: groupCounts(filteredEvents.map((event) => channelForEvent(event))),
+    countries: groupCounts([...filteredOrders.map((order) => order.customer.country), ...filteredEvents.map((event) => event.country || "未知")]),
+    traffic: {
+      profiles: buildVisitorProfiles(events).filter((profile) => isInsideRange(profile.lastSeen, filter)),
+      trend: trafficTrend(filteredEvents),
+      excluded: scopedEvents.filter((event) => !isRealEvent(event)).map(enrichEvent),
+      channels: groupCounts(filteredEvents.map((event) => channelForEvent(event))),
+      landingPages: groupCounts(filteredEvents.map((event) => event.landingPage || event.page || "/")),
+    },
   };
 }
 

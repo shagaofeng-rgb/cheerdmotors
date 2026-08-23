@@ -14,8 +14,8 @@ function countRows(values: string[]) {
 export default async function AdminAttributionPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const timeFilter = parseAdminTimeFilter(await searchParams);
   const data = await getAdminDashboardData({ from: timeFilter.from, to: timeFilter.to });
-  const pages = countRows(data.events.map((event) => event.page || "未知页面"));
-  const devices = countRows(data.events.map((event) => event.device || "Unknown"));
+  const pages = data.traffic.landingPages;
+  const devices = countRows(data.allEvents.filter((event) => data.events.some((row) => row.id === event.id)).map((event) => event.device || "Unknown"));
   const productInterest = data.popularProducts;
 
   return (
@@ -27,7 +27,7 @@ export default async function AdminAttributionPage({ searchParams }: { searchPar
         <AdminTimeFilter action="/admin/attribution" range={timeFilter.range} start={timeFilter.start} end={timeFilter.end} label="归因统计时间" summary={timeFilter.summary} />
       </div>
       <div className="admin-metrics">
-        <article><span>来源数</span><strong>{data.trafficSources.length}</strong><small>referrer 去重</small></article>
+        <article><span>来源渠道</span><strong>{data.traffic.channels.length}</strong><small>搜索、社媒、外链与直接访问</small></article>
         <article><span>国家/地区</span><strong>{data.countries.length}</strong><small>访问 + 订单地区</small></article>
         <article><span>访问页面</span><strong>{pages.length}</strong><small>路径去重</small></article>
         <article><span>产品兴趣</span><strong>{productInterest.length}</strong><small>浏览/订单聚合</small></article>
@@ -35,7 +35,7 @@ export default async function AdminAttributionPage({ searchParams }: { searchPar
       <section className="admin-panel">
         <div><p className="eyebrow">流量来源</p><h2>来源、地区与设备</h2></div>
         <div className="admin-two-col">
-          <div className="admin-bar-list">{data.trafficSources.length ? data.trafficSources.map((row) => <p key={row.label}><span>{row.label}</span><strong>{row.value}</strong></p>) : <p><span>暂无来源数据</span><strong>0</strong></p>}</div>
+          <div className="admin-bar-list">{data.traffic.channels.length ? data.traffic.channels.map((row) => <p key={row.label}><span>{row.label}</span><strong>{row.value}</strong></p>) : <p><span>暂无来源数据</span><strong>0</strong></p>}</div>
           <div className="admin-bar-list">{data.countries.length ? data.countries.map((row) => <p key={row.label}><span>{row.label}</span><strong>{row.value}</strong></p>) : <p><span>暂无地区数据</span><strong>0</strong></p>}</div>
           <div className="admin-bar-list">{devices.length ? devices.map((row) => <p key={row.label}><span>{row.label}</span><strong>{row.value}</strong></p>) : <p><span>暂无设备数据</span><strong>0</strong></p>}</div>
           <div className="admin-bar-list">{productInterest.length ? productInterest.map((row) => <p key={row.label}><span>{row.label}</span><strong>{row.value}</strong></p>) : <p><span>暂无产品兴趣数据</span><strong>0</strong></p>}</div>

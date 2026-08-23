@@ -21,19 +21,27 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
       <div className="admin-title">
         <p className="eyebrow">B2B + B2C 后台系统</p>
         <h1>订单、线索、内容与转化数据</h1>
-        <p>整体框架按同类商城后台模式搭建：访问事件、订单、CMS 数据和客户线索统一读取。</p>
+        <p>真实访客、订单、内容与客户线索统一读取；机器人、测试及内部流量已从核心统计隔离。</p>
         <AdminTimeFilter action="/admin" range={timeFilter.range} start={timeFilter.start} end={timeFilter.end} label="数据统计时间" summary={timeFilter.summary} />
       </div>
       <div className="admin-metrics">
         <article><span>订单数</span><strong>{snapshot.metrics.orders}</strong><small>客户提交后生成</small></article>
         <article><span>待付款</span><strong>{snapshot.metrics.pendingPayment}</strong><small>等待支付或人工确认</small></article>
         <article><span>已确认销售额</span><strong>{money(snapshot.metrics.revenue)}</strong><small>已付款/处理中订单</small></article>
-        <article><span>真实访客</span><strong>{snapshot.metrics.visitors}</strong><small>前台匿名访客 ID</small></article>
+        <article><span>真实访客</span><strong>{snapshot.metrics.visitors}</strong><small>已过滤机器人与测试流量</small></article>
         <article><span>产品数据</span><strong>{backend.metrics.publishedProducts}/{backend.metrics.products}</strong><small>已发布 / 总数</small></article>
         <article><span>内容数据</span><strong>{backend.metrics.posts}</strong><small>博客与新闻</small></article>
         <article><span>客户线索</span><strong>{backend.metrics.leads}</strong><small>订单 + 访问行为</small></article>
         <article><span>转化率</span><strong>{backend.metrics.conversionRate}%</strong><small>订单 / 独立访客</small></article>
       </div>
+      <section className="admin-panel admin-operations-overview">
+        <div><p className="eyebrow">今日运营信号</p><h2>真实流量概览</h2><p>按当前时间范围，仅统计通过流量质量规则的访客。</p></div>
+        <div className="admin-two-col">
+          <div className="admin-bar-list"><h3>来源渠道</h3>{backend.traffic.channels.length ? backend.traffic.channels.slice(0, 6).map((row) => <p key={row.label}><span>{row.label}</span><strong>{row.value}</strong></p>) : <p><span>暂无真实流量</span><strong>0</strong></p>}</div>
+          <div className="admin-bar-list"><h3>国家/地区</h3>{backend.countries.length ? backend.countries.slice(0, 6).map((row) => <p key={row.label}><span>{row.label}</span><strong>{row.value}</strong></p>) : <p><span>暂无地区数据</span><strong>0</strong></p>}</div>
+        </div>
+        <div className="admin-quick-links"><a href="/admin/visitors?range=day">查看今日访客</a><a href="/admin/analytics?range=day">查看流量分析</a><a href="/admin/attribution?range=day">查看来源归因</a></div>
+      </section>
       <section className="admin-panel">
         <div><p className="eyebrow">同步状态</p><h2>前台与后台实时同步检查</h2></div>
         <dl className="admin-config-list">

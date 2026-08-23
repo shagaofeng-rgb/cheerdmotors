@@ -10,5 +10,5 @@ export async function GET(request: Request) {
   if (response) return response;
   const timeFilter = parseAdminTimeFilter(Object.fromEntries(new URL(request.url).searchParams.entries()));
   const data = await getAdminDashboardData({ from: timeFilter.from, to: timeFilter.to });
-  return Response.json({ filter: { range: timeFilter.range, start: timeFilter.start, end: timeFilter.end, timezone: timeFilter.timezone }, metrics: data.metrics, events: data.events, countries: data.countries, trafficSources: data.trafficSources, popularProducts: data.popularProducts });
+  return Response.json({ filter: { range: timeFilter.range, start: timeFilter.start, end: timeFilter.end, timezone: timeFilter.timezone }, metrics: data.metrics, events: data.events, countries: data.countries, trafficSources: data.trafficSources, popularProducts: data.popularProducts, traffic: { channels: data.traffic.channels, trend: data.traffic.trend, excluded: data.traffic.excluded.length } }, { headers: { "Cache-Control": "no-store" } });
 }

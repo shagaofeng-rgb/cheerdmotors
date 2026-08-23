@@ -90,6 +90,16 @@ export type AnalyticsEvent = {
   os: string;
   timestamp: string;
   payload: Record<string, unknown>;
+  ipHash?: string;
+  maskedIp?: string;
+  region?: string;
+  landingPage?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  trafficQuality?: "real" | "internal_test" | "bot" | "excluded";
+  exclusionReason?: string;
+  channel?: string;
 };
 
 export type RefundRecord = {
@@ -283,7 +293,8 @@ export async function getCommerceSnapshot(filter?: { from?: Date; to?: Date }) {
     return true;
   };
   const scopedOrders = orders.filter((order) => inside(order.createdAt));
-  const scopedEvents = events.filter((event) => inside(event.timestamp));
+  const { isRealEvent } = await import("@/lib/trafficAnalytics");
+  const scopedEvents = events.filter((event) => inside(event.timestamp) && isRealEvent(event));
   const paidOrders = scopedOrders.filter((order) => ["paid", "processing", "shipped", "delivered", "completed"].includes(order.status));
   return {
     metrics: {
