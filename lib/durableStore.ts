@@ -60,6 +60,20 @@ export async function appendStoreLine(fileName: string, value: unknown) {
   await fs.appendFile(localFile(fileName), `${JSON.stringify(value)}\n`, "utf8");
 }
 
+export async function appendStoreLineLimited(fileName: string, value: unknown, limit = 100) {
+  const safeLimit = Math.max(1, Math.min(1000, Math.floor(limit)));
+  if (durableStoreConfigured()) {
+    const key = storeKey(fileName);
+    await kvPipeline([
+      ["RPUSH", key, JSON.stringify(value)],
+      ["LTRIM", key, String(-safeLimit), "-1"],
+    ]);
+    return;
+  }
+  const existing = await readStoreLines<unknown>(fileName);
+  await writeStoreLines(fileName, [...existing, value].slice(-safeLimit));
+}
+
 export async function readStoreLines<T>(fileName: string) {
   if (durableStoreConfigured()) {
     const [items] = await kvPipeline<string[]>([["LRANGE", storeKey(fileName), "0", "-1"]]);
