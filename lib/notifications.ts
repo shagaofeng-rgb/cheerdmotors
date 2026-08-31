@@ -1,4 +1,4 @@
-import { appendStoreLine } from "@/lib/durableStore";
+import { appendStoreLine, readStoreLines } from "@/lib/durableStore";
 
 const NOTIFICATION_LOG_FILE = "notification-log.jsonl";
 const NEWSLETTER_FILE = "newsletter-subscribers.jsonl";
@@ -72,6 +72,8 @@ export async function notifyInquiry(payload: InquiryNotificationPayload) {
 export async function saveNewsletterSubscriber(email: string, source = "footer") {
   const cleanEmail = email.trim().toLowerCase().slice(0, 180);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) return { ok: false, error: "Invalid email" };
+  const existing = await readStoreLines<{ email?: string }>(NEWSLETTER_FILE);
+  if (existing.some((subscriber) => subscriber.email?.trim().toLowerCase() === cleanEmail)) return { ok: true, alreadySubscribed: true };
   await appendStoreLine(NEWSLETTER_FILE, { id: `newsletter-${Date.now()}`, email: cleanEmail, source, createdAt: new Date().toISOString(), consent: true });
   return { ok: true };
 }

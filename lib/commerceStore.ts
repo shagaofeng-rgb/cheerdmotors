@@ -1,5 +1,6 @@
 import { appendStoreLine, readStoreLines, writeStoreLines } from "@/lib/durableStore";
-import { products, type CheckoutProductSlug } from "@/lib/site";
+import type { CheckoutProductSlug } from "@/lib/site";
+import { getStorefrontProduct } from "@/lib/storefrontCatalog";
 
 const ORDERS_FILE = "orders.jsonl";
 const EVENTS_FILE = "analytics-events.jsonl";
@@ -73,6 +74,7 @@ export type StoreOrder = {
   };
   createdAt: string;
   updatedAt: string;
+  idempotencyKey?: string;
 };
 
 export type AnalyticsEvent = {
@@ -174,8 +176,14 @@ export async function createStoreOrder(input: {
   paymentMethod?: PaymentMethod;
   customer: StoreOrder["customer"];
   checkout?: Partial<StoreOrder["checkout"]>;
+  idempotencyKey?: string;
 }) {
-  const product = products[input.productSlug];
+  if (input.idempotencyKey) {
+    const existing = (await readStoreOrders()).find((order) => order.idempotencyKey === input.idempotencyKey);
+    if (existing) return existing;
+  }
+  const product = await getStorefrontProduct(input.productSlug);
+  if (!product) throw new Error("Product is unavailable");
   const variant = product.variants?.find((item) => item.id === input.variantId) || product.variants?.[0] || null;
   const quantity = Math.max(1, Math.min(99, Number(input.quantity || 1)));
   const availableInventory = variant?.inventory ?? product.inventory ?? 99;
@@ -226,6 +234,7 @@ export async function createStoreOrder(input: {
     },
     createdAt: now,
     updatedAt: now,
+    idempotencyKey: input.idempotencyKey,
   };
   await appendStoreLine(ORDERS_FILE, order);
   return order;

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import SiteNav from "@/components/SiteNav";
+import { absoluteUrl } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | CHEERDMOTO",
   description: "How CHEERDMOTO collects, uses, stores, and protects customer inquiry, order, and website analytics data.",
+  alternates: { canonical: absoluteUrl("/privacy") },
 };
 
 export default function PrivacyPage() {

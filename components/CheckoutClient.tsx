@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CreditCard, ShieldCheck } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useRef, useState } from "react";
 import type { SiteProduct } from "@/lib/site";
 
 type Props = {
@@ -24,8 +24,10 @@ export default function CheckoutClient({ product, quantity, variantId, existingO
   const total = unitPrice * safeQuantity;
   const [status, setStatus] = useState(existingOrderId ? `Order ${existingOrderId} is ready for review.` : "");
   const [loading, setLoading] = useState(false);
+  const [completed, setCompleted] = useState(Boolean(existingOrderId));
   const [paymentUrl, setPaymentUrl] = useState("");
-  const variantLabel = useMemo(() => variant?.label || "Standard", [variant?.label]);
+  const idempotencyKey = useRef(globalThis.crypto?.randomUUID?.() || `checkout_${Date.now()}_${Math.random().toString(16).slice(2)}`);
+  const variantLabel = variant?.label || "Standard";
 
   async function submitOrder(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -34,6 +36,7 @@ export default function CheckoutClient({ product, quantity, variantId, existingO
     setStatus("");
     const formData = new FormData(event.currentTarget);
     const payload = Object.fromEntries(formData.entries());
+    payload.idempotencyKey = idempotencyKey.current;
     const response = await fetch("/api/checkout/create-order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -46,6 +49,7 @@ export default function CheckoutClient({ product, quantity, variantId, existingO
       return;
     }
     setPaymentUrl(result.paymentUrl || "");
+    setCompleted(true);
     setStatus(`Order ${result.order.id} created. ${result.paymentUrl ? "Continue to secure payment." : "Payment link will be confirmed after order review."}`);
   }
 
@@ -79,7 +83,7 @@ export default function CheckoutClient({ product, quantity, variantId, existingO
           <label>Country<input name="country" required autoComplete="country-name" /></label>
           <label>Shipping address<textarea name="address" required rows={4} /></label>
           <label>Message<textarea name="message" rows={3} placeholder="Optional order notes" /></label>
-          <button className="button primary" type="submit" disabled={loading}>{loading ? "Creating order..." : "Create Order"}</button>
+          <button className="button primary" type="submit" disabled={loading || completed}>{loading ? "Creating order..." : completed ? "Order Created" : "Create Order"}</button>
           {paymentUrl ? <a className="button ghost" href={paymentUrl}>Continue to Secure Payment</a> : null}
           {status ? <p className="checkout-status">{status}</p> : null}
           <div className="payment-trust">

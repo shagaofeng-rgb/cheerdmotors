@@ -26,6 +26,7 @@ export async function POST(request: Request) {
       quantity: Number(payload.quantity || 1),
       paymentMethod: payload.paymentMethod === "card" ? "card" : payload.paymentMethod === "bank_transfer" ? "bank_transfer" : "manual_quote",
       customer,
+      idempotencyKey: str(payload.idempotencyKey, 120).replace(/[^a-zA-Z0-9_-]/g, ""),
     });
   } catch (error) {
     return Response.json({ message: error instanceof Error ? error.message : "Unable to create order" }, { status: 400 });

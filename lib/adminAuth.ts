@@ -6,7 +6,9 @@ export const ADMIN_COOKIE_NAME = "cheerdmotors_admin_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
 
 function secret() {
-  return process.env.ADMIN_JWT_SECRET || "cheerdmotors-local-admin-secret";
+  if (process.env.ADMIN_JWT_SECRET) return process.env.ADMIN_JWT_SECRET;
+  if (process.env.NODE_ENV === "production") throw new Error("ADMIN_JWT_SECRET is required in production.");
+  return "cheerdmotors-local-admin-secret";
 }
 
 function base64Url(input: string) {

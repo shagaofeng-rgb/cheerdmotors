@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import ProductDetailClient from "@/components/ProductDetailClient";
 import { SiteNav } from "@/app/category-content";
 import { absoluteUrl } from "@/lib/content";
-import { getProduct, getRelatedProducts, productSlugs, type ProductSlug } from "@/lib/site";
+import { productSlugs } from "@/lib/site";
+import { getStorefrontProduct, listStorefrontProducts } from "@/lib/storefrontCatalog";
+
+export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -15,7 +18,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProduct(slug);
+  const product = await getStorefrontProduct(slug);
   if (!product) return {};
   const title = `${product.name} | CHEERDMOTO`;
   const description = product.shortDescription || product.description || `${product.name} product details, price, specifications and checkout.`;
@@ -32,9 +35,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  const product = getProduct(slug);
+  const product = await getStorefrontProduct(slug);
   if (!product) notFound();
-  const related = getRelatedProducts(product);
+  const relatedSlugs = new Set(product.relatedIds || []);
+  const related = (await listStorefrontProducts()).filter((item) => relatedSlugs.has(item.slug));
   const productUrl = absoluteUrl(`/products/${product.slug}`);
   const imageUrls = (product.gallery?.length ? product.gallery : [product.image]).map((image) => absoluteUrl(image));
   const availability = product.stockStatus === "out_of_stock" || (product.inventory || 0) < 1 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock";

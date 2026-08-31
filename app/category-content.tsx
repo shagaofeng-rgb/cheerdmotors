@@ -2,11 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import SiteNavComponent from "@/components/SiteNav";
+import { listStorefrontProducts } from "@/lib/storefrontCatalog";
+import type { ProductSlug } from "@/lib/site";
 
 export { default as SiteNav } from "@/components/SiteNav";
 
 type CategoryProduct = {
-  slug?: string;
+  slug?: ProductSlug;
   badge?: string;
   image: string;
   name: string;
@@ -51,9 +53,9 @@ export const categoryPages: Record<string, CategoryPageData> = {
     heroAlt: "XCEED electric dirt bike in a blue technical lab scene",
     stats: [
       ["8.5 kW", "peak power"],
-      ["85 km/h", "top speed"],
+      ["53 mph", "top speed"],
       ["380 N.m", "max torque"],
-      ["85 km", "eco range"],
+      ["72V", "power system"],
       ["IP54", "water resistant"],
     ],
     filters: ["Availability", "Price", "Color", "Voltage", "Model"],
@@ -64,23 +66,23 @@ export const categoryPages: Record<string, CategoryPageData> = {
         image: "/volt-lab/category/dirt-bikes/dirt_bikes_use_product_card_01.png",
         name: "Xtreme Performance 96V Electric Dirt Bike",
         price: "$4,499.00",
-        specs: ["96V", "8.5 kW", "85 km/h", "85 km"],
+        specs: ["96V", "15,000W peak", "72 mph", "465 N.m"],
       },
       {
         badge: "Sale",
         slug: "xceed",
         image: "/volt-lab/category/dirt-bikes/dirt_bikes_use_product_card_02.png",
         name: "Xceed 72V Electric Dirt Bike",
-        price: "$2,099.00",
-        specs: ["72V", "7.2 kW", "72 km/h", "75 km"],
+        price: "$3,099.00",
+        specs: ["72V", "8,500W peak", "53 mph", "380 N.m"],
       },
       {
         badge: "Sale",
         slug: "xceed",
         image: "/volt-lab/category/dirt-bikes/dirt_bikes_use_product_card_03.png",
         name: "Xceed 72V Electric Dirt Bike - Blaze Orange",
-        price: "$2,099.00",
-        specs: ["72V", "7.2 kW", "72 km/h", "75 km"],
+        price: "$3,099.00",
+        specs: ["72V", "8,500W peak", "53 mph", "380 N.m"],
       },
     ],
     compareTitle: "Find your perfect ride",
@@ -101,13 +103,13 @@ export const categoryPages: Record<string, CategoryPageData> = {
     primaryCta: "Explore e-bikes",
     secondaryCta: "Compare models",
     heroImage: "/volt-lab/category/e-bikes/e_bike_use_hero_scene.png",
-    heroAlt: "Grandeux electric bikes in a blue city scene",
+    heroAlt: "CHEERDMOTO electric bikes in a blue city scene",
     stats: [
-      ["80 mi", "max range"],
-      ["28 mph", "top speed"],
-      ["Display", "connected"],
-      ["350 lb", "payload"],
-      ["Comfort", "ride anywhere"],
+      ["3", "daily ride models"],
+      ["$499", "starting price"],
+      ["Step-thru", "easy access"],
+      ["Utility", "daily cargo"],
+      ["Suspension", "ride comfort"],
     ],
     filters: ["Availability", "Price", "Category", "Ride Style", "Payload"],
     products: [
@@ -117,7 +119,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
         image: "/volt-lab/category/e-bikes/e_bike_use_product_card_01.png",
         name: "Xcite Step-Thru Electric Bike",
         price: "$499.00",
-        specs: ["750W", "28 mph", "65 mi", "350 lb"],
+        specs: ["Step-thru frame", "Daily mobility", "Compliant speed", "Easy access"],
       },
       {
         badge: "Fat Tire",
@@ -125,7 +127,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
         image: "/volt-lab/category/e-bikes/e_bike_use_product_card_02.png",
         name: "Xplore Fat Tire E-Bike",
         price: "$499.00",
-        specs: ["750W", "25 mph", "80 mi", "350 lb"],
+        specs: ["Utility frame", "Daily cargo", "Compliant speed", "Modular platform"],
       },
       {
         badge: "Moped Style",
@@ -133,7 +135,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
         image: "/volt-lab/category/e-bikes/e_bike_use_product_card_03.png",
         name: "Xplus Fat Tire Moped E-Bike",
         price: "From $599.00",
-        specs: ["1000W", "28 mph", "60 mi", "350 lb"],
+        specs: ["Full suspension", "Comfort ride", "Compliant speed", "Urban trail"],
       },
     ],
     compareTitle: "Find your perfect ride",
@@ -157,7 +159,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
     heroAlt: "Smart B02 electric wheelchair in a blue technical scene",
     stats: [
       ["15 mi", "range"],
-      ["250 lb", "capacity"],
+      ["350 lb", "capacity"],
       ["46 lb", "net weight"],
       ["2 x 250W", "motors"],
       ["6 mph", "top speed"],
@@ -197,7 +199,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
       ["Perfect", "fit"],
       ["Rapid", "delivery"],
       ["Expert", "support"],
-      ["26", "results"],
+      ["3", "managed products"],
     ],
     filters: ["Category", "Availability", "Price", "Compatibility", "Sort By"],
     products: Array.from({ length: 15 }, (_, index) => ({
@@ -205,7 +207,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
       name:
         [
           "72V 30Ah Battery",
-          "Electric Dirt Bike Brake Pads",
+          "Xceed Brake Kit",
           "Xceed Dirt Bike Front Fender Set",
           "Xceed Dirt Bike Wheel Shell",
           "Xceed Brake Rotor",
@@ -221,7 +223,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
           "Xceed Spoor-Light Rear",
         ][index],
       price:
-        ["$1,199.00", "$29.00", "$49.00", "$29.00", "$49.00", "From $59.00", "From $69.00", "$249.00", "$39.00", "$69.00", "$199.00", "$79.00", "$29.00", "$69.00", "$29.00"][index],
+        ["$1,199.00", "$49.00", "$49.00", "$29.00", "$49.00", "From $59.00", "From $69.00", "$249.00", "$39.00", "$69.00", "$199.00", "$79.00", "$29.00", "$69.00", "$29.00"][index],
       specs: ["CHEERDMOTO"],
       slug: index === 0 ? "battery-pack" : index === 1 ? "brake-kit" : index === 7 ? "smart-charger" : undefined,
       badge: index === 2 || index === 8 || index === 14 ? "Sale" : undefined,
@@ -233,7 +235,19 @@ export const categoryPages: Record<string, CategoryPageData> = {
   },
 };
 
-export function CategoryPage({ data }: { data: CategoryPageData }) {
+function usd(amount: number) {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
+}
+
+export async function CategoryPage({ data }: { data: CategoryPageData }) {
+  const storefrontProducts = await listStorefrontProducts();
+  const managedProducts = new Map(storefrontProducts.map((product) => [product.slug, product]));
+  const visibleProducts = data.products.flatMap((product) => {
+    if (!product.slug) return [];
+    const managed = managedProducts.get(product.slug);
+    if (!managed) return [];
+    return [{ ...product, price: usd(managed.priceAmount), specs: managed.specs }];
+  });
   return (
     <main className="category-shell">
       <SiteNavComponent />
@@ -276,11 +290,11 @@ export function CategoryPage({ data }: { data: CategoryPageData }) {
 
         <div className="catalog-main">
           <div className="catalog-toolbar">
-            <strong>{data.products.length} results</strong>
+            <strong>{visibleProducts.length} results</strong>
             <span>Sort by Featured</span>
           </div>
-          <div className={data.products.length > 6 ? "category-product-grid accessories" : "category-product-grid"}>
-            {data.products.map((product) => (
+          <div className={visibleProducts.length > 6 ? "category-product-grid accessories" : "category-product-grid"}>
+            {visibleProducts.map((product) => (
               <article className="category-product-card" key={product.name}>
                 {product.badge ? <span className="badge">{product.badge}</span> : null}
                 <button className="heart" aria-label={`Save ${product.name}`}>

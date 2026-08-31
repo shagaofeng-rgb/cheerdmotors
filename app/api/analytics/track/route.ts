@@ -17,6 +17,15 @@ function locationHeader(request: Request, name: string) {
   }
 }
 
+function safePayload(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .slice(0, 20)
+      .map(([key, item]) => [key.slice(0, 80), typeof item === "string" ? item.slice(0, 500) : typeof item === "number" || typeof item === "boolean" ? item : ""]),
+  );
+}
+
 export async function POST(request: Request) {
   const payload = await request.json().catch(() => ({}));
   const now = new Date().toISOString();
@@ -37,7 +46,7 @@ export async function POST(request: Request) {
     browser: String(request.headers.get("user-agent") || payload.browser || "Unknown").slice(0, 260),
     os: String(payload.os || "Unknown").slice(0, 80),
     timestamp: now,
-    payload: typeof payload.payload === "object" && payload.payload ? { ...payload.payload, environment: String(payload.environment || "").slice(0, 120) } : { environment: String(payload.environment || "").slice(0, 120) },
+    payload: { ...safePayload(payload.payload), environment: String(payload.environment || "").slice(0, 120) },
     ipHash: hashIp(ip),
     maskedIp: maskedIp(ip),
     region: locationHeader(request, "x-vercel-ip-country-region"),
@@ -46,6 +55,9 @@ export async function POST(request: Request) {
     utmMedium: search.get("utm_medium")?.slice(0, 120) || "",
     utmCampaign: search.get("utm_campaign")?.slice(0, 120) || "",
   });
+  if (event.trafficQuality !== "real") {
+    return Response.json({ ok: true, recorded: false }, { headers: { "Cache-Control": "no-store" } });
+  }
   await appendAnalyticsEvent(event);
-  return Response.json({ ok: true });
+  return Response.json({ ok: true, recorded: true }, { headers: { "Cache-Control": "no-store" } });
 }

@@ -1,5 +1,6 @@
 import { products, productSlugs, type ProductSlug } from "@/lib/site";
 import type { ContentPost } from "@/lib/backendStore";
+import { decodeHtmlEntities } from "@/lib/text";
 
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || "https://cheerdmotors.com").replace(/\/$/, "");
 
@@ -13,14 +14,10 @@ export function postPath(post: Pick<ContentPost, "type" | "slug">) {
 }
 
 export function cleanText(value: string, limit = 5000) {
-  return value
+  return decodeHtmlEntities(value)
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<[^>]+>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, limit);

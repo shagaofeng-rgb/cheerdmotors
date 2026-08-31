@@ -3,6 +3,7 @@ import { readStoreObject, writeStoreObject } from "@/lib/durableStore";
 import { products, productSlugs, type ProductSlug } from "@/lib/site";
 import { readAnalyticsEvents, readStoreOrders, type AnalyticsEvent, type StoreOrder } from "@/lib/commerceStore";
 import { buildVisitorProfiles, channelForEvent, enrichEvent, groupCounts, isRealEvent, trafficTrend } from "@/lib/trafficAnalytics";
+import { decodeHtmlEntities } from "@/lib/text";
 
 const STORE_FILE = "admin-store.json";
 
@@ -185,7 +186,7 @@ export async function listAdminMedia() {
 
 export async function listAdminPosts(type?: ContentType) {
   const posts = (await readAdminStore()).posts;
-  return posts.filter((post) => !type || post.type === type).sort((a, b) => b.publishDate.localeCompare(a.publishDate));
+  return posts.map(normalizeContentPost).filter((post) => !type || post.type === type).sort((a, b) => b.publishDate.localeCompare(a.publishDate));
 }
 
 export async function listPublishedPosts(type?: ContentType) {
@@ -193,7 +194,45 @@ export async function listPublishedPosts(type?: ContentType) {
 }
 
 export async function findPublishedPost(type: ContentType, slug: string) {
-  return (await listPublishedPosts(type)).find((post) => post.slug === slug) || null;
+  const post = (await readAdminStore()).posts.find((item) => item.type === type && item.slug === slug && item.status === "published");
+  return post ? normalizeContentPost(post) : null;
+}
+
+const KNOWN_BROKEN_COVERS = new Set([
+  "https://www.electrive.com/media/2026/07/audi-a2-etron-erlkonig-2026-electrive-400x307.png",
+]);
+
+function normalizeContentPost(post: ContentPost): ContentPost {
+  const relatedSlug = post.relatedProductSlugs?.find((slug) => slug in products) as ProductSlug | undefined;
+  const decodedCover = decodeHtmlEntities(post.coverImage || "");
+  const coverImage = KNOWN_BROKEN_COVERS.has(decodedCover)
+    ? products[relatedSlug || "xceed"].image
+    : decodedCover || products[relatedSlug || "xceed"].image;
+  const decoded = (value?: string) => decodeHtmlEntities(value || "");
+  return {
+    ...post,
+    title: decoded(post.title),
+    excerpt: decoded(post.excerpt),
+    coverImage,
+    category: decoded(post.category),
+    content: decoded(post.content),
+    author: decoded(post.author),
+    source: decoded(post.source),
+    tags: (post.tags || []).map(decoded),
+    seoTitle: decoded(post.seoTitle),
+    seoDescription: decoded(post.seoDescription),
+    originalTitle: post.originalTitle ? decoded(post.originalTitle) : undefined,
+    sourceName: post.sourceName ? decoded(post.sourceName) : undefined,
+    sourceUrl: post.sourceUrl ? decoded(post.sourceUrl) : undefined,
+    canonicalSourceUrl: post.canonicalSourceUrl ? decoded(post.canonicalSourceUrl) : undefined,
+    facts: post.facts ? decoded(post.facts) : undefined,
+    perspective: post.perspective ? decoded(post.perspective) : undefined,
+    customerImpact: post.customerImpact ? decoded(post.customerImpact) : undefined,
+    ourHelp: post.ourHelp ? decoded(post.ourHelp) : undefined,
+    geoSummary: post.geoSummary ? decoded(post.geoSummary) : undefined,
+    faq: post.faq?.map((item) => ({ question: decoded(item.question), answer: decoded(item.answer) })),
+    imageAlt: post.imageAlt ? decoded(post.imageAlt) : undefined,
+  };
 }
 
 function isInsideRange(timestamp: string, filter?: { from?: Date; to?: Date }) {

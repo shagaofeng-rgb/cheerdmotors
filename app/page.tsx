@@ -1,50 +1,49 @@
 import Image from "next/image";
+import type { Metadata } from "next";
 import SiteNav from "@/components/SiteNav";
+import { absoluteUrl } from "@/lib/content";
+import { listStorefrontProducts } from "@/lib/storefrontCatalog";
 
-const products = [
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "CHEERDMOTO | Intelligent Electric Mobility",
+  description: "CHEERDMOTO electric dirt bikes, e-bikes, smart mobility platforms, genuine parts and ownership support.",
+  alternates: { canonical: absoluteUrl("/") },
+};
+
+const homeProducts = [
   {
     id: "xm-0716",
-    name: "XTREME",
+    slug: "xtreme",
     category: "96V E-System",
-    price: "From $4,499",
-    image: "/volt-lab/products/xtreme_transparent.png",
   },
   {
     id: "xm-0320",
-    name: "XCEED",
+    slug: "xceed",
     category: "72V Bafang",
-    price: "$3,099",
-    image: "/volt-lab/products/xceed_transparent.png",
   },
   {
     id: "eg-0918",
-    name: "XCITE",
+    slug: "xcite",
     category: "Step-Thru",
-    price: "From $499",
-    image: "/volt-lab/products/xcite_transparent.png",
   },
   {
     id: "eg-0919",
-    name: "XPLORE",
+    slug: "xplore",
     category: "Over-Frame",
-    price: "From $499",
-    image: "/volt-lab/products/xplore_transparent.png",
   },
   {
     id: "eg-0712",
-    name: "XPLUS",
+    slug: "xplus",
     category: "Full Suspension",
-    price: "From $599",
-    image: "/volt-lab/products/xplus_transparent.png",
   },
   {
     id: "ch-smrtb",
-    name: "SMART B02",
+    slug: "smart-b02",
     category: "Dual Drive",
-    price: "$399",
-    image: "/volt-lab/products/smart_b02_transparent.png",
   },
-];
+] as const;
 
 const decisions = [
   ["01", "Power Map", "Clear motor, range and terrain hierarchy."],
@@ -68,7 +67,7 @@ const platforms = [
   },
 ];
 
-const grandeux = [
+const dailyRides = [
   {
     name: "XCITE",
     image: "/volt-lab/products/xcite_transparent.png",
@@ -93,19 +92,23 @@ const support = [
   ["Lifetime Support", "Human help for long-term ownership."],
 ];
 
-const productLinks: Record<string, string> = {
-  XTREME: "/products/xtreme",
-  XCEED: "/products/xceed",
-  XCITE: "/products/xcite",
-  XPLORE: "/products/xplore",
-  XPLUS: "/products/xplus",
-  "SMART B02": "/products/smart-b02",
-};
+function usd(amount: number) {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(amount);
+}
 
-export default function Home() {
+export default async function Home({ searchParams }: { searchParams: Promise<{ newsletter?: string }> }) {
+  const { newsletter } = await searchParams;
+  const storefrontProducts = await listStorefrontProducts();
+  const productMap = new Map(storefrontProducts.map((product) => [product.slug, product]));
+  const productCards = homeProducts.flatMap((item) => {
+    const product = productMap.get(item.slug);
+    return product ? [{ ...item, ...product, price: usd(product.priceAmount) }] : [];
+  });
   return (
     <main className="site-shell">
       <SiteNav />
+      {newsletter === "1" ? <p className="form-notice home-notice" role="status">Subscription confirmed. Product updates will be sent to this email address.</p> : null}
+      {newsletter === "error" ? <p className="form-notice home-notice error" role="alert">Please enter a valid email address and try again.</p> : null}
 
       <section className="hero-section" id="motorcycle">
         <div className="hero-copy">
@@ -168,7 +171,7 @@ export default function Home() {
           <p>A unified modular card system for every current model.</p>
         </div>
         <div className="product-grid">
-          {products.map((product) => (
+          {productCards.map((product) => (
             <article className="product-card" key={product.id}>
               <span className="product-code">{product.id}</span>
               <Image
@@ -181,7 +184,7 @@ export default function Home() {
               <p>{product.category}</p>
               <div className="card-footer">
                 <strong>{product.price}</strong>
-                <a href={productLinks[product.name]}>Details</a>
+                <a href={`/products/${product.slug}`}>Details</a>
               </div>
             </article>
           ))}
@@ -219,15 +222,15 @@ export default function Home() {
       <section className="daily-section section-pad" id="bike">
         <div className="section-heading dark-on-light">
           <h2>One system. Three daily rides.</h2>
-          <p>Grandeux models organized by frame geometry and rider use case.</p>
+          <p>CHEERDMOTO models organized by frame geometry and rider use case.</p>
         </div>
         <div className="daily-grid">
-          {grandeux.map((item) => (
+          {dailyRides.map((item) => (
             <article className="daily-card" key={item.name}>
               <Image src={item.image} alt={`${item.name} e-bike`} width={620} height={440} />
               <h3>{item.name}</h3>
               <p>{item.label}</p>
-              <span>1350W max / 20 mph compliant</span>
+              <span>Daily electric assist / support-ready ownership</span>
             </article>
           ))}
         </div>

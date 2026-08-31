@@ -11,3 +11,8 @@ legacy-site/
 backups/
 .vercel
 .data/
+.playwright-cli/
+output/
+playwright-report/
+test-results/
+*.tsbuildinfo

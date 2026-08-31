@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { listPublishedPosts } from "@/lib/backendStore";
 import { absoluteUrl, postPath } from "@/lib/content";
 import SiteNav from "@/components/SiteNav";
+import ContentImage from "@/components/ContentImage";
+import PublicPagination from "@/components/PublicPagination";
 
 export const dynamic = "force-dynamic";
 
@@ -12,11 +14,18 @@ export const metadata: Metadata = {
   alternates: { canonical: absoluteUrl("/news") },
 };
 
+const PAGE_SIZE = 12;
+
 export default async function NewsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
   const category = Array.isArray(params.category) ? params.category[0] : params.category;
-  const posts = (await listPublishedPosts("news")).filter((post) => !category || post.category === category || post.tags.includes(category));
-  const categories = [...new Set((await listPublishedPosts("news")).map((post) => post.category).filter(Boolean))];
+  const requestedPage = Number(Array.isArray(params.page) ? params.page[0] : params.page || 1);
+  const allPosts = await listPublishedPosts("news");
+  const filteredPosts = allPosts.filter((post) => !category || post.category === category || post.tags.includes(category));
+  const totalPages = Math.max(1, Math.ceil(filteredPosts.length / PAGE_SIZE));
+  const page = Math.max(1, Math.min(Number.isFinite(requestedPage) ? Math.floor(requestedPage) : 1, totalPages));
+  const posts = filteredPosts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const categories = [...new Set(allPosts.map((post) => post.category).filter(Boolean))];
   return (
     <main className="content-site">
       <SiteNav />
@@ -32,11 +41,12 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
       <section className="content-grid">
         {posts.length ? posts.map((post) => (
           <article className="content-card" key={post.id}>
-            <img src={post.coverImage} alt={post.imageAlt || post.title} />
+            <ContentImage src={post.coverImage} alt={post.imageAlt || post.title} />
             <div><span>{post.publishDate} · {post.category}</span><h2><Link href={postPath(post)}>{post.title}</Link></h2><p>{post.excerpt}</p><small>Source: {post.sourceName || post.source || "CHEERDMOTO"}</small></div>
           </article>
         )) : <article className="content-empty"><h2>No published news yet</h2><p>Published news will appear here.</p></article>}
       </section>
+      <PublicPagination pathname="/news" page={page} totalPages={totalPages} query={{ category }} />
     </main>
   );
 }

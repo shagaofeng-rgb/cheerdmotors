@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import SiteNav from "@/components/SiteNav";
+import { absoluteUrl } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Terms of Service | CHEERDMOTO",
   description: "CHEERDMOTO website terms covering inquiries, product information, quotations, orders, shipping, support, and website use.",
+  alternates: { canonical: absoluteUrl("/terms") },
 };
 
 export default function TermsPage() {

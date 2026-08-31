@@ -1,6 +1,17 @@
 import { SiteNav } from "@/app/category-content";
 import CheckoutClient from "@/components/CheckoutClient";
-import { getProduct } from "@/lib/site";
+import type { Metadata } from "next";
+import { absoluteUrl } from "@/lib/content";
+import { getStorefrontProduct } from "@/lib/storefrontCatalog";
+
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Checkout | CHEERDMOTO",
+  description: "Create and review a CHEERDMOTO product order.",
+  alternates: { canonical: absoluteUrl("/checkout") },
+  robots: { index: false, follow: false },
+};
 
 type Props = {
   searchParams: Promise<{ productSlug?: string; quantity?: string; variantId?: string; orderId?: string }>;
@@ -8,7 +19,7 @@ type Props = {
 
 export default async function CheckoutPage({ searchParams }: Props) {
   const params = await searchParams;
-  const product = params.productSlug ? getProduct(params.productSlug) : null;
+  const product = params.productSlug ? await getStorefrontProduct(params.productSlug) : null;
   return (
     <>
       <SiteNav />
