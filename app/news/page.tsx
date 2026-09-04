@@ -27,12 +27,12 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
   const posts = filteredPosts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const categories = [...new Set(allPosts.map((post) => post.category).filter(Boolean))];
   return (
-    <main className="content-site">
+    <main className="content-site editorial-c news-c">
       <SiteNav />
       <section className="content-hero">
-        <p className="eyebrow">Global News</p>
         <h1>Electric mobility news, filtered for product decisions.</h1>
         <p>Every published item keeps the original source visible, adds CHEERDMOTO analysis, and links readers to relevant product categories.</p>
+        <span className="content-hero-label">CHEERDMOTO / Global News</span>
       </section>
       <section className="content-filters">
         <Link className={!category ? "is-active" : ""} href="/news">All</Link>

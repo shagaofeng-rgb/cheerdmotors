@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import { ArrowRight, Headphones, PackageCheck, RotateCcw, Truck } from "lucide-react";
 import SiteNavComponent from "@/components/SiteNav";
 import { listStorefrontProducts } from "@/lib/storefrontCatalog";
 import type { ProductSlug } from "@/lib/site";
@@ -17,6 +17,7 @@ type CategoryProduct = {
 };
 
 type CategoryPageData = {
+  theme: "trail" | "daily" | "mobility" | "parts";
   eyebrow: string;
   title: string;
   titleAccent?: string;
@@ -43,6 +44,7 @@ const sharedSupport = [
 
 export const categoryPages: Record<string, CategoryPageData> = {
   dirtBikes: {
+    theme: "trail",
     eyebrow: "Dirt Bikes",
     title: "Intelligent off-road power",
     copy:
@@ -96,6 +98,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
     supportTone: "built tough",
   },
   eBikes: {
+    theme: "daily",
     eyebrow: "E-Bikes",
     title: "Connected. capable. everyday.",
     copy:
@@ -148,6 +151,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
     supportTone: "ride ready",
   },
   wheelchairs: {
+    theme: "mobility",
     eyebrow: "Intelligent Mobility",
     title: "Comfort. freedom.",
     titleAccent: "Your way.",
@@ -185,6 +189,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
     supportTone: "real freedom",
   },
   accessories: {
+    theme: "parts",
     eyebrow: "Parts & Accessories",
     title: "Precision upgrades.",
     titleAccent: "Genuine performance.",
@@ -242,33 +247,36 @@ function usd(amount: number) {
 export async function CategoryPage({ data }: { data: CategoryPageData }) {
   const storefrontProducts = await listStorefrontProducts();
   const managedProducts = new Map(storefrontProducts.map((product) => [product.slug, product]));
-  const visibleProducts = data.products.flatMap((product) => {
-    if (!product.slug) return [];
-    const managed = managedProducts.get(product.slug);
-    if (!managed) return [];
-    return [{ ...product, price: usd(managed.priceAmount), specs: managed.specs }];
+  const configuredProducts = new Map<ProductSlug, CategoryProduct>();
+  data.products.forEach((product) => {
+    if (product.slug && !configuredProducts.has(product.slug)) configuredProducts.set(product.slug, product);
   });
+  const visibleProducts = Array.from(configuredProducts.entries()).flatMap(([slug, presentation]) => {
+    const managed = managedProducts.get(slug);
+    if (!managed) return [];
+    return [{ ...managed, badge: presentation.badge, price: usd(managed.priceAmount) }];
+  });
+  const supportIcons = [Truck, RotateCcw, PackageCheck, Headphones];
+
   return (
-    <main className="category-shell">
+    <main className={`category-shell category-c ${data.theme}`}>
       <SiteNavComponent />
       <section className="category-hero">
+        <div className="category-hero-media">
+          <Image src={data.heroImage} alt={data.heroAlt} fill sizes="100vw" priority />
+        </div>
         <div className="category-copy">
-          <p className="eyebrow">{data.eyebrow}</p>
           <h1>
             {data.title}
             {data.titleAccent ? <span>{data.titleAccent}</span> : null}
           </h1>
-          <p>{data.copy}</p>
-          <div className="hero-ctas">
-            <a className="button primary" href="#catalog">
-              {data.primaryCta}
-            </a>
-            <a className="button ghost" href="#compare">
-              {data.secondaryCta}
-            </a>
+          <p className="category-hero-copy">{data.copy}</p>
+          <div className="category-hero-actions">
+            <a className="category-primary-action" href="#catalog">{data.primaryCta} <ArrowRight size={17} /></a>
+            <a className="category-secondary-action" href="#compare">{data.secondaryCta} <ArrowRight size={16} /></a>
           </div>
         </div>
-        <Image className="category-hero-image" src={data.heroImage} alt={data.heroAlt} width={520} height={430} priority />
+        <span className="category-hero-label">CHEERDMOTO / {data.eyebrow}</span>
       </section>
 
       <section className="category-stats" aria-label="Category highlights">
@@ -281,77 +289,74 @@ export async function CategoryPage({ data }: { data: CategoryPageData }) {
       </section>
 
       <section className="catalog-section" id="catalog">
-        <aside className="filter-panel catalog-guide">
-          <div className="filter-title"><strong>Shop this collection</strong></div>
-          <p>Compare the available models, then open a product page for configuration, pricing and checkout.</p>
-          {data.filters.map((filter) => <span className="filter-row" key={filter}>{filter}</span>)}
-          <Link className="button primary" href="/contact">Need help choosing?</Link>
-        </aside>
-
+        <div className="category-catalog-head">
+          <div>
+            <h2>Choose your {data.eyebrow.toLowerCase()}</h2>
+            <p>Every product below is connected to the managed catalog for current pricing, availability and specifications.</p>
+          </div>
+          <nav className="category-switcher" aria-label="Product categories">
+            <Link className={data.theme === "trail" ? "active" : ""} href="/electric-dirt-bikes">Trail</Link>
+            <Link className={data.theme === "daily" ? "active" : ""} href="/electric-bikes">Daily</Link>
+            <Link className={data.theme === "mobility" ? "active" : ""} href="/electric-wheelchairs">Mobility</Link>
+            <Link className={data.theme === "parts" ? "active" : ""} href="/accessories">Parts</Link>
+          </nav>
+        </div>
         <div className="catalog-main">
           <div className="catalog-toolbar">
-            <strong>{visibleProducts.length} results</strong>
-            <span>Sort by Featured</span>
+            <strong>{visibleProducts.length} {visibleProducts.length === 1 ? "model" : "models"}</strong>
+            <Link href="/contact">Need help choosing? <ArrowRight size={15} /></Link>
           </div>
-          <div className={visibleProducts.length > 6 ? "category-product-grid accessories" : "category-product-grid"}>
+          <div className={`category-product-grid ${data.theme === "parts" ? "accessories" : ""} ${visibleProducts.length === 1 ? "single" : ""}`}>
             {visibleProducts.map((product) => (
-              <article className="category-product-card" key={product.name}>
+              <article className="category-product-card" key={product.slug}>
                 {product.badge ? <span className="badge">{product.badge}</span> : null}
-                <button className="heart" aria-label={`Save ${product.name}`}>
-                  <Heart size={18} />
-                </button>
-                <Image src={product.image} alt={product.name} width={320} height={360} />
-                <small>CHEERDMOTO</small>
-                <h2>{product.name}</h2>
-                <div className="rating">Customer reviews will be available soon.</div>
+                <Link className="category-product-image" href={`/products/${product.slug}`} aria-label={`View ${product.name}`}>
+                  <Image src={product.image} alt={product.name} width={560} height={420} />
+                </Link>
+                <span className="category-product-type">{product.category}</span>
+                <h3><Link href={`/products/${product.slug}`}>{product.name}</Link></h3>
+                <p>{product.shortDescription}</p>
                 <div className="spec-pills">
-                  {product.specs.map((spec) => (
+                  {product.specs.slice(0, 4).map((spec) => (
                     <span key={spec}>{spec}</span>
                   ))}
                 </div>
-                <strong className="price">{product.price}</strong>
-                <Link className="quick-add" href={product.slug ? `/products/${product.slug}` : "/contact"}>{product.slug ? "View details" : "Contact us"}</Link>
+                <div className="category-product-foot">
+                  <strong className="price">{product.price}</strong>
+                  <Link className="quick-add" href={`/products/${product.slug}`}>View details <ArrowRight size={16} /></Link>
+                </div>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="category-benefits">
-        {["Instant torque", "Precise control", "Long range", data.supportTone].map((item) => (
-          <article key={item}>
-            <strong>{item}</strong>
-            <span>Designed around real ownership, not just the spec sheet.</span>
-          </article>
-        ))}
-      </section>
-
       <section className="compare-panel" id="compare">
-        <div>
-          <p className="eyebrow">Not sure which one?</p>
+        <div className="compare-copy">
           <h2>{data.compareTitle}</h2>
           <p>{data.compareCopy}</p>
-          <a className="button primary" href="#catalog">
-            Compare models
-          </a>
+          <a className="category-primary-action" href="#catalog">Compare models <ArrowRight size={17} /></a>
         </div>
         <div className="compare-images">
-          {data.compareImages.map((item) => (
-            <figure key={item.label}>
-              <Image src={item.image} alt={item.label} width={260} height={220} />
-              <figcaption>{item.label}</figcaption>
+          {visibleProducts.map((product) => (
+            <figure key={product.slug}>
+              <Image src={product.image} alt={product.name} width={420} height={320} />
+              <figcaption>{product.name}</figcaption>
             </figure>
           ))}
         </div>
       </section>
 
       <section className="support-band">
-        {sharedSupport.map(([title, body]) => (
+        {sharedSupport.map(([title, body], index) => {
+          const Icon = supportIcons[index];
+          return (
           <article key={title}>
-            <strong>{title}</strong>
-            <span>{body}</span>
+            <Icon aria-hidden="true" size={23} />
+            <div><strong>{title}</strong><span>{body}</span></div>
           </article>
-        ))}
+          );
+        })}
       </section>
 
       <CategoryFooter />
@@ -361,48 +366,39 @@ export async function CategoryPage({ data }: { data: CategoryPageData }) {
 
 function CategoryFooter() {
   return (
-    <footer className="footer-section category-footer">
-      <div className="footer-brand">
-        <Link className="brand cyan" href="/">
-          CHEERDMOTO
-        </Link>
-        <p>Future mobility, real products.</p>
-      </div>
-      <div className="footer-links">
-        <div>
-          <h3>Shop</h3>
-          <Link href="/electric-dirt-bikes">E-Motorcycle</Link>
-          <Link href="/electric-bikes">E-Bike</Link>
-          <Link href="/electric-wheelchairs">E-Wheelchair</Link>
-          <Link href="/accessories">Accessories</Link>
+    <footer className="category-footer">
+      <div className="category-footer-inner">
+        <div className="category-footer-brand">
+          <Link className="brand" href="/">CHEERDMOTO</Link>
+          <p>Electric machines for trail, city and everyday independence.</p>
         </div>
-        <div>
-          <h3>Support</h3>
-          <a href="/contact">Contact</a>
-          <a href="/#support">Manuals</a>
-          <a href="/#support">Warranty</a>
-          <a href="/#support">Order Tracking</a>
+        <nav className="category-footer-links" aria-label="Footer navigation">
+          <div>
+            <h3>Shop</h3>
+            <Link href="/electric-dirt-bikes">E-Motorcycle</Link>
+            <Link href="/electric-bikes">E-Bike</Link>
+            <Link href="/electric-wheelchairs">E-Wheelchair</Link>
+            <Link href="/accessories">Accessories</Link>
+          </div>
+          <div>
+            <h3>Discover</h3>
+            <Link href="/news">News</Link>
+            <Link href="/blog">Guides</Link>
+            <Link href="/contact">Contact</Link>
+            <Link href="/search">Search</Link>
+          </div>
+        </nav>
+        <form className="category-newsletter" action="/api/newsletter/subscribe" method="post">
+          <h3>Product updates</h3>
+          <p>New models, ownership updates and product releases.</p>
+          <input type="hidden" name="source" value="category-footer" />
+          <label><span>Email address</span><input type="email" name="email" placeholder="Email address" required /></label>
+          <button type="submit" aria-label="Subscribe to product updates"><ArrowRight size={19} /></button>
+        </form>
+        <div className="category-legal">
+          <span>© 2026 CHEERDMOTO. All rights reserved.</span>
+          <span><Link href="/privacy">Privacy</Link> / <Link href="/terms">Terms</Link></span>
         </div>
-        <div>
-          <h3>Discover</h3>
-          <a href="/#motorcycle">About</a>
-          <Link href="/news">News</Link>
-          <a href="/#bike">Rider Club</a>
-          <Link href="/blog">Blog</Link>
-        </div>
-      </div>
-      <form className="newsletter" action="/api/newsletter/subscribe" method="post">
-        <h3>Newsletter</h3>
-        <input type="hidden" name="source" value="category-footer" />
-        <label>
-          <span>Email address</span>
-          <input type="email" name="email" placeholder="Enter your email" required />
-        </label>
-        <button type="submit">Subscribe</button>
-      </form>
-      <div className="legal">
-        <span>© 2026 CHEERDMOTO. All rights reserved.</span>
-        <span><a href="/privacy">Privacy</a> / <a href="/terms">Terms</a></span>
       </div>
     </footer>
   );

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Check, ChevronRight, CreditCard, Minus, PackageCheck, Plus, ShieldCheck, Truck, X } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, CreditCard, Maximize2, Minus, PackageCheck, Plus, ShieldCheck, ShoppingBag, Truck, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { ProductSlug, SiteProduct } from "@/lib/site";
 
@@ -83,8 +83,7 @@ export default function ProductDetailClient({ product, related }: Props) {
   const checkoutHref = `/checkout?productSlug=${encodeURIComponent(product.slug)}&quantity=${quantity}${activeVariant ? `&variantId=${encodeURIComponent(activeVariant.id)}` : ""}`;
 
   return (
-    <main className="pdp-shell">
-      <TrustBar />
+    <main className="pdp-shell pdp-c">
       <nav className="pdp-breadcrumb" aria-label="Breadcrumb">
         <Link href="/">Home</Link>
         <ChevronRight size={14} />
@@ -97,6 +96,7 @@ export default function ProductDetailClient({ product, related }: Props) {
         <div className="pdp-gallery">
           <button className="pdp-main-media" type="button" onClick={() => setLightboxOpen(true)} aria-label={`Open image preview for ${product.name}`}>
             <Image src={activeImage || product.image} alt={`${product.name} product image`} width={760} height={620} priority />
+            <span className="pdp-zoom-label"><Maximize2 size={16} /> View larger</span>
           </button>
           <div className="pdp-thumbs" aria-label="Product images">
             {gallery.map((image) => (
@@ -104,15 +104,16 @@ export default function ProductDetailClient({ product, related }: Props) {
                 <Image src={image} alt={`${product.name} thumbnail`} width={120} height={96} />
               </button>
             ))}
-            <div className="pdp-video-slot">Video</div>
           </div>
         </div>
 
         <aside className="pdp-summary">
-          <p className="eyebrow">{product.category}</p>
+          <div className="pdp-summary-topline">
+            <span>{product.category}</span>
+            {activeVariant?.sku || product.sku ? <span>{activeVariant?.sku || product.sku}</span> : null}
+          </div>
           <h1>{product.name}</h1>
           <div className="pdp-meta">
-            {activeVariant?.sku || product.sku ? <span>SKU: {activeVariant?.sku || product.sku}</span> : null}
             {product.model ? <span>Model: {product.model}</span> : null}
           </div>
           <div className="pdp-price-row">
@@ -153,8 +154,8 @@ export default function ProductDetailClient({ product, related }: Props) {
           </div>
 
           <div className="pdp-cta-grid">
-            <Link className={`button primary buy-now ${purchasable ? "" : "disabled"}`} href={purchasable ? checkoutHref : "#"} aria-disabled={!purchasable}>Buy Now</Link>
-            <button className="button ghost add-cart" type="button" disabled={!purchasable} onClick={addToCart}>Add to Cart</button>
+            <Link className={`button primary buy-now ${purchasable ? "" : "disabled"}`} href={purchasable ? checkoutHref : "#"} aria-disabled={!purchasable}>Buy Now <ArrowRight size={17} /></Link>
+            <button className="button ghost add-cart" type="button" disabled={!purchasable} onClick={addToCart}><ShoppingBag size={17} /> Add to Cart</button>
           </div>
           {cartNotice ? <p className="pdp-cart-notice" role="status">{cartNotice}</p> : null}
 
@@ -166,14 +167,15 @@ export default function ProductDetailClient({ product, related }: Props) {
         </aside>
       </section>
 
+      <TrustBar />
       <QuickSpecs product={product} />
       <ProductDetails product={product} />
       <RelatedItems related={related} />
 
       <div className="pdp-mobile-bar">
         <strong>{money(price)}</strong>
-        <button type="button" disabled={!purchasable} onClick={addToCart}>Add</button>
-        <Link className={purchasable ? "" : "disabled"} href={purchasable ? checkoutHref : "#"} aria-disabled={!purchasable}>Buy Now</Link>
+        <button type="button" disabled={!purchasable} onClick={addToCart}><ShoppingBag size={16} /> Add</button>
+        <Link className={purchasable ? "" : "disabled"} href={purchasable ? checkoutHref : "#"} aria-disabled={!purchasable}>Buy Now <ArrowRight size={16} /></Link>
       </div>
 
       {lightboxOpen ? (
@@ -231,76 +233,75 @@ function ProductDetails({ product }: { product: SiteProduct }) {
     { question: "How long does shipping take?", answer: "Shipping method and delivery timing are confirmed after order review." },
   ];
   return (
-    <section className="pdp-details">
-      <details open>
-        <summary>Description</summary>
-        <p>{product.description || product.shortDescription || "Detailed product description will be available soon."}</p>
-        {product.keyFeatures?.length ? <ul>{product.keyFeatures.map((feature) => <li key={feature}>{feature}</li>)}</ul> : null}
-      </details>
-      {product.specifications?.length ? (
+    <section className="pdp-details-section" aria-labelledby="pdp-details-title">
+      <header className="pdp-details-heading">
+        <h2 id="pdp-details-title">Everything that matters.</h2>
+        <p>Product construction, specifications, package contents and ownership information for {product.name}.</p>
+      </header>
+      <div className="pdp-details">
         <details open>
-          <summary>Specifications</summary>
-          <div className="spec-table">
-            {product.specifications.map((spec) => (
-              <div key={`${spec.label}-${spec.value}`}>
-                <span>{spec.label}</span>
-                <strong>{spec.value}</strong>
-              </div>
+          <summary>Description</summary>
+          <p>{product.description || product.shortDescription || "Detailed product description will be available soon."}</p>
+          {product.keyFeatures?.length ? <ul>{product.keyFeatures.map((feature) => <li key={feature}>{feature}</li>)}</ul> : null}
+        </details>
+        {product.specifications?.length ? (
+          <details open>
+            <summary>Specifications</summary>
+            <div className="spec-table">
+              {product.specifications.map((spec) => (
+                <div key={`${spec.label}-${spec.value}`}>
+                  <span>{spec.label}</span>
+                  <strong>{spec.value}</strong>
+                </div>
+              ))}
+            </div>
+          </details>
+        ) : null}
+        {product.packageIncludes?.length ? (
+          <details>
+            <summary>Package Includes</summary>
+            <ul>{product.packageIncludes.map((item) => <li key={item}>{item}</li>)}</ul>
+          </details>
+        ) : null}
+        <details>
+          <summary>Shipping & Returns</summary>
+          <p>{product.shippingInfo || "Shipping method, delivery timing and returns are confirmed during order handling."}</p>
+          <p>{product.warranty || "Warranty coverage depends on final order terms."}</p>
+          <p><Link href="/terms">View terms</Link> · <Link href="/privacy">Privacy policy</Link></p>
+        </details>
+        <details>
+          <summary>FAQ</summary>
+          <div className="faq-stack">
+            {faqs.map((faq) => (
+              <details key={faq.question}>
+                <summary>{faq.question}</summary>
+                <p>{faq.answer}</p>
+              </details>
             ))}
           </div>
         </details>
-      ) : null}
-      {product.packageIncludes?.length ? (
-        <details>
-          <summary>Package Includes</summary>
-          <ul>{product.packageIncludes.map((item) => <li key={item}>{item}</li>)}</ul>
-        </details>
-      ) : null}
-      <details>
-        <summary>Shipping & Returns</summary>
-        <p>{product.shippingInfo || "Shipping method, delivery timing and returns are confirmed during order handling."}</p>
-        <p>{product.warranty || "Warranty coverage depends on final order terms."}</p>
-        <p><Link href="/terms">View terms</Link> · <Link href="/privacy">Privacy policy</Link></p>
-      </details>
-      <details>
-        <summary>Reviews</summary>
-        <p>Customer reviews will be available soon.</p>
-      </details>
-      <details>
-        <summary>FAQ</summary>
-        <div className="faq-stack">
-          {faqs.map((faq) => (
-            <details key={faq.question}>
-              <summary>{faq.question}</summary>
-              <p>{faq.answer}</p>
-            </details>
-          ))}
-        </div>
-      </details>
+      </div>
     </section>
   );
 }
 
 function RelatedItems({ related }: { related: SiteProduct[] }) {
-  if (!related.length) return null;
+  const visualRelated = related.filter((item) => item.image.startsWith("/volt-lab/products/"));
+  if (!visualRelated.length) return null;
   return (
     <section className="pdp-related">
-      <div className="section-heading">
-        <h2>You May Also Like</h2>
-        <p>Related products from the same platform, category or ownership path.</p>
+      <div className="pdp-related-heading">
+        <h2>Keep moving.</h2>
+        <p>Parts, platforms and products connected to this ownership path.</p>
       </div>
-      <div className="product-grid">
-        {related.map((item) => (
-          <article className="product-card" key={item.slug}>
-            <span className="product-code">{item.sku || item.slug}</span>
+      <div className={`pdp-related-grid ${visualRelated.length === 1 ? "single" : ""}`}>
+        {visualRelated.map((item) => (
+          <Link className="pdp-related-card" href={`/products/${item.slug as ProductSlug}`} key={item.slug}>
+            <span>{item.category}</span>
             <Image src={item.image} alt={`${item.name} related product`} width={520} height={360} />
             <h3>{item.name}</h3>
-            <p>{item.category}</p>
-            <div className="card-footer">
-              <strong>{money(item.priceAmount)}</strong>
-              <Link href={`/products/${item.slug as ProductSlug}`}>Details</Link>
-            </div>
-          </article>
+            <div><strong>{money(item.priceAmount)}</strong><span>Details <ArrowRight size={16} /></span></div>
+          </Link>
         ))}
       </div>
     </section>
