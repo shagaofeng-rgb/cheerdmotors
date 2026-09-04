@@ -51,8 +51,8 @@ export const categoryPages: Record<string, CategoryPageData> = {
       "Electric dirt bikes engineered for instant torque, precise control and all-terrain confidence without the noise.",
     primaryCta: "Explore the lineup",
     secondaryCta: "Compare models",
-    heroImage: "/volt-lab/category/dirt-bikes/dirt_bikes_use_hero_scene.png",
-    heroAlt: "XCEED electric dirt bike in a blue technical lab scene",
+    heroImage: "/volt-lab/products/xceed_transparent.png",
+    heroAlt: "COWIN XCEED electric dirt bike",
     stats: [
       ["8.5 kW", "peak power"],
       ["53 mph", "top speed"],
@@ -65,7 +65,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
       {
         badge: "Sale",
         slug: "xtreme",
-        image: "/volt-lab/category/dirt-bikes/dirt_bikes_use_product_card_01.png",
+        image: "/volt-lab/products/xtreme_transparent.png",
         name: "Xtreme Performance 96V Electric Dirt Bike",
         price: "$4,499.00",
         specs: ["96V", "15,000W peak", "72 mph", "465 N.m"],
@@ -73,7 +73,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
       {
         badge: "Sale",
         slug: "xceed",
-        image: "/volt-lab/category/dirt-bikes/dirt_bikes_use_product_card_02.png",
+        image: "/volt-lab/products/xceed_transparent.png",
         name: "Xceed 72V Electric Dirt Bike",
         price: "$3,099.00",
         specs: ["72V", "8,500W peak", "53 mph", "380 N.m"],
@@ -81,7 +81,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
       {
         badge: "Sale",
         slug: "xceed",
-        image: "/volt-lab/category/dirt-bikes/dirt_bikes_use_product_card_03.png",
+        image: "/volt-lab/products/xceed_transparent.png",
         name: "Xceed 72V Electric Dirt Bike - Blaze Orange",
         price: "$3,099.00",
         specs: ["72V", "8,500W peak", "53 mph", "380 N.m"],
@@ -105,8 +105,8 @@ export const categoryPages: Record<string, CategoryPageData> = {
       "Smart electric bikes built for city streets, weekend escapes and everyday range without losing comfort or utility.",
     primaryCta: "Explore e-bikes",
     secondaryCta: "Compare models",
-    heroImage: "/volt-lab/category/e-bikes/e_bike_use_hero_scene.png",
-    heroAlt: "COWIN electric bikes in a blue city scene",
+    heroImage: "/volt-lab/products/xcite_transparent.png",
+    heroAlt: "COWIN XCITE step-through electric bike",
     stats: [
       ["3", "daily ride models"],
       ["$499", "starting price"],
@@ -119,7 +119,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
       {
         badge: "Step-Thru",
         slug: "xcite",
-        image: "/volt-lab/category/e-bikes/e_bike_use_product_card_01.png",
+        image: "/volt-lab/products/xcite_transparent.png",
         name: "Xcite Step-Thru Electric Bike",
         price: "$499.00",
         specs: ["Step-thru frame", "Daily mobility", "Compliant speed", "Easy access"],
@@ -127,7 +127,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
       {
         badge: "Fat Tire",
         slug: "xplore",
-        image: "/volt-lab/category/e-bikes/e_bike_use_product_card_02.png",
+        image: "/volt-lab/products/xplore_transparent.png",
         name: "Xplore Fat Tire E-Bike",
         price: "$499.00",
         specs: ["Utility frame", "Daily cargo", "Compliant speed", "Modular platform"],
@@ -135,7 +135,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
       {
         badge: "Moped Style",
         slug: "xplus",
-        image: "/volt-lab/category/e-bikes/e_bike_use_product_card_03.png",
+        image: "/volt-lab/products/xplus_transparent.png",
         name: "Xplus Fat Tire Moped E-Bike",
         price: "From $599.00",
         specs: ["Full suspension", "Comfort ride", "Compliant speed", "Urban trail"],
@@ -159,8 +159,8 @@ export const categoryPages: Record<string, CategoryPageData> = {
       "The Smart B02 electric wheelchair is engineered for real life: lightweight, foldable and travel friendly.",
     primaryCta: "Explore Smart B02",
     secondaryCta: "View buying guide",
-    heroImage: "/volt-lab/category/wheelchairs/electric_wheelchair_use_hero_scene.png",
-    heroAlt: "Smart B02 electric wheelchair in a blue technical scene",
+    heroImage: "/volt-lab/products/smart_b02_transparent.png",
+    heroAlt: "COWIN Smart B02 electric wheelchair",
     stats: [
       ["15 mi", "range"],
       ["350 lb", "capacity"],
@@ -173,7 +173,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
       {
         badge: "In stock",
         slug: "smart-b02",
-        image: "/volt-lab/category/wheelchairs/electric_wheelchair_use_product_main.png",
+        image: "/volt-lab/products/smart_b02_transparent.png",
         name: "Smart B02 Electric Wheelchair",
         price: "$399.00",
         specs: ["Foldable", "Lightweight", "Range", "Safety first"],
@@ -197,8 +197,8 @@ export const categoryPages: Record<string, CategoryPageData> = {
       "Genuine COWIN parts and accessories engineered for perfect fit, lasting durability and peak performance.",
     primaryCta: "Shop all parts",
     secondaryCta: "View guides",
-    heroImage: "/volt-lab/category/accessories/parts_accessories_use_hero_scene.png",
-    heroAlt: "COWIN parts and accessories on a blue ring platform",
+    heroImage: "/media/heroes/cowin-parts-studio.jpg",
+    heroAlt: "COWIN battery, charger, helmet and brake components",
     stats: [
       ["Genuine", "parts"],
       ["Perfect", "fit"],
@@ -208,7 +208,24 @@ export const categoryPages: Record<string, CategoryPageData> = {
     ],
     filters: ["Category", "Availability", "Price", "Compatibility", "Sort By"],
     products: Array.from({ length: 15 }, (_, index) => ({
-      image: `/volt-lab/category/accessories/parts_accessories_use_accessory_${String(index + 1).padStart(2, "0")}.png`,
+      image:
+        [
+          "/media/accessories/x-series-battery.jpg",
+          "/media/accessories/xceed-brake-kit.jpg",
+          "/media/accessories/xceed-fender-set.jpg",
+          "/media/accessories/xceed-wheel-shell.jpg",
+          "/media/accessories/xceed-brake-rotor.jpg",
+          "/media/accessories/xceed-brake-hose.jpg",
+          "/media/accessories/xceed-body-kit.jpg",
+          "/media/accessories/xceed-fast-charger.jpg",
+          "/media/accessories/xceed-side-stand.jpg",
+          "/media/accessories/xceed-throttle.jpg",
+          "/media/accessories/xceed-helmet.jpg",
+          "/media/accessories/x-series-lcd-display.jpg",
+          "/media/accessories/universal-phone-holder.jpg",
+          "/media/accessories/x-series-rear-rack.jpg",
+          "/media/accessories/xceed-rear-light.jpg",
+        ][index],
       name:
         [
           "72V 30Ah Battery",
@@ -263,7 +280,7 @@ export async function CategoryPage({ data }: { data: CategoryPageData }) {
       <SiteNavComponent />
       <section className="category-hero">
         <div className="category-hero-media">
-          <Image src={data.heroImage} alt={data.heroAlt} fill sizes="100vw" priority />
+          <Image src={data.heroImage} alt={data.heroAlt} fill sizes="(max-width: 680px) 100vw, 62vw" priority />
         </div>
         <div className="category-copy">
           <h1>

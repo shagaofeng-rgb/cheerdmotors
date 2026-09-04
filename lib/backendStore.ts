@@ -169,6 +169,7 @@ export async function readAdminStore() {
 
 function normalizeAdminStoreBranding(store: AdminStore): AdminStore {
   const brand = (value: string) => rebrandLegacyText(value || "");
+  const legacyImage = (value?: string) => Boolean(value && /^\/volt-lab\/category\//.test(value));
   return {
     ...store,
     categories: store.categories.map((category) => ({
@@ -177,18 +178,23 @@ function normalizeAdminStoreBranding(store: AdminStore): AdminStore {
       seoTitle: brand(category.seoTitle),
       seoDescription: brand(category.seoDescription),
     })),
-    products: store.products.map((product) => ({
-      ...product,
-      shortDescription: brand(product.shortDescription),
-      fullDescription: brand(product.fullDescription),
-      keyFeatures: product.keyFeatures.map(brand),
-      specifications: product.specifications.map((item) => ({ label: brand(item.label), value: brand(item.value) })),
-      applicationScenarios: product.applicationScenarios.map(brand),
-      sku: product.sku.replace(/^CM-/, "CW-"),
-      shippingInfo: brand(product.shippingInfo),
-      seoTitle: brand(product.seoTitle),
-      seoDescription: brand(product.seoDescription),
-    })),
+    products: store.products.map((product) => {
+      const base = products[product.slug as ProductSlug];
+      return {
+        ...product,
+        coverImage: base && legacyImage(product.coverImage) ? base.image : product.coverImage,
+        galleryImages: base && product.galleryImages.some(legacyImage) ? base.gallery || [base.image] : product.galleryImages,
+        shortDescription: brand(product.shortDescription),
+        fullDescription: brand(product.fullDescription),
+        keyFeatures: product.keyFeatures.map(brand),
+        specifications: product.specifications.map((item) => ({ label: brand(item.label), value: brand(item.value) })),
+        applicationScenarios: product.applicationScenarios.map(brand),
+        sku: product.sku.replace(/^CM-/, "CW-"),
+        shippingInfo: brand(product.shippingInfo),
+        seoTitle: brand(product.seoTitle),
+        seoDescription: brand(product.seoDescription),
+      };
+    }),
     media: store.media.map((asset) => ({ ...asset, alt: brand(asset.alt), usage: asset.usage.map(brand) })),
     posts: store.posts.map(normalizeContentPost),
     settings: {
@@ -237,7 +243,7 @@ const KNOWN_BROKEN_COVERS = new Set([
 function normalizeContentPost(post: ContentPost): ContentPost {
   const relatedSlug = post.relatedProductSlugs?.find((slug) => slug in products) as ProductSlug | undefined;
   const decodedCover = decodeHtmlEntities(post.coverImage || "");
-  const coverImage = KNOWN_BROKEN_COVERS.has(decodedCover)
+  const coverImage = KNOWN_BROKEN_COVERS.has(decodedCover) || /^\/volt-lab\/category\//.test(decodedCover)
     ? products[relatedSlug || "xceed"].image
     : decodedCover || products[relatedSlug || "xceed"].image;
   const decoded = (value?: string) => rebrandLegacyText(decodeHtmlEntities(value || ""));

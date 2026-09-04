@@ -27,6 +27,10 @@ type StoredProduct = {
 
 type StoredCatalog = { products?: StoredProduct[] };
 
+function usesLegacyExtractedImage(value?: string) {
+  return Boolean(value && /^\/volt-lab\/category\//.test(value));
+}
+
 function mergeProduct(base: SiteProduct, stored?: StoredProduct): SiteProduct | null {
   if (stored?.status && stored.status !== "published") return null;
   if (!stored) return base;
@@ -40,8 +44,10 @@ function mergeProduct(base: SiteProduct, stored?: StoredProduct): SiteProduct | 
     ...base,
     name: rebrandLegacyText(stored.name || base.name),
     category: rebrandLegacyText(stored.categoryName || base.category),
-    image: stored.coverImage || base.image,
-    gallery: stored.galleryImages && stored.galleryImages.length > 1 ? stored.galleryImages : base.gallery,
+    image: usesLegacyExtractedImage(stored.coverImage) ? base.image : stored.coverImage || base.image,
+    gallery: stored.galleryImages?.some(usesLegacyExtractedImage)
+      ? base.gallery
+      : stored.galleryImages && stored.galleryImages.length > 1 ? stored.galleryImages : base.gallery,
     shortDescription: rebrandLegacyText((customShortDescription ? stored.shortDescription : base.shortDescription) || ""),
     description: rebrandLegacyText((customDescription ? stored.fullDescription : base.description) || ""),
     keyFeatures: (customFeatures ? stored.keyFeatures : base.keyFeatures)?.map(rebrandLegacyText),

@@ -37,12 +37,12 @@ for (const viewport of [
 
 test("content lists are paginated and images load", async ({ page }) => {
   await page.goto("/news", { waitUntil: "domcontentloaded" });
-  await expect(page.locator(".content-card")).toHaveCount(12);
+  await expect(page.locator(".content-card")).toHaveCount(9);
   await expect(page.locator(".content-pagination")).toContainText("Page 1 of");
   await expect.poll(() => page.locator(".content-card img").first().evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
 
   await page.goto("/blog", { waitUntil: "domcontentloaded" });
-  await expect(page.locator(".content-card")).toHaveCount(12);
+  await expect(page.locator(".content-card")).toHaveCount(9);
   await expect(page.locator(".content-pagination")).toContainText("Page 1 of");
 });
 

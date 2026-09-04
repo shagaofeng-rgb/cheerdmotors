@@ -1,11 +1,12 @@
 import crypto from "node:crypto";
 import { writeAdminStore, type ContentPost } from "@/lib/backendStore";
-import { cleanText, slugify } from "@/lib/content";
+import { cleanText, fallbackRelatedProducts, slugify } from "@/lib/content";
+import { stabilizeContentImage } from "@/lib/contentMedia";
+import { products, type ProductSlug } from "@/lib/site";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const FALLBACK_COVER_IMAGE = "/volt-lab/products/xceed_transparent.png";
 const MAX_CONTENT_LENGTH = 30_000;
 
 type ArticlePayload = {
@@ -141,13 +142,16 @@ export async function POST(request: Request) {
   const now = new Date().toISOString();
   const hash = stableId(payload);
   const canonicalUrl = `webhook:blog:${hash}`;
+  const relatedProductSlugs = fallbackRelatedProducts(`${payload.title} ${payload.content}`) as ProductSlug[];
+  const fallbackCover = products[relatedProductSlugs[0] || "xcite"].image;
+  const stableCover = await stabilizeContentImage(payload.imageUrl, fallbackCover, `blog-${hash}`);
   const post: ContentPost = {
     id: `webhook-blog-${hash.slice(0, 16)}`,
     type: "blog",
     slug: `${slugify(payload.title)}-${hash.slice(0, 10)}`.slice(0, 120),
     title: payload.title,
     excerpt: cleanText(payload.content, 260),
-    coverImage: payload.imageUrl || FALLBACK_COVER_IMAGE,
+    coverImage: stableCover.url,
     category: "Plugin Blog",
     content: payload.content,
     publishDate: now.slice(0, 10),
@@ -163,6 +167,7 @@ export async function POST(request: Request) {
     automationStatus: "manual",
     imageAlt: payload.title,
     imageSourceUrl: payload.imageUrl || undefined,
+    relatedProductSlugs,
   };
 
   try {
@@ -171,7 +176,7 @@ export async function POST(request: Request) {
       duplicate = store.posts.some((item) => item.canonicalUrl === canonicalUrl);
       return duplicate ? store : { ...store, posts: [...store.posts, post] };
     });
-    recordResult(request, duplicate ? "duplicate" : "published", payload);
+    recordResult(request, duplicate ? "duplicate" : stableCover.mirrored ? "published_image_mirrored" : `published_image_${stableCover.reason || "local"}`, payload);
     return jsonResponse(1, "发布成功");
   } catch (error) {
     console.error(JSON.stringify({

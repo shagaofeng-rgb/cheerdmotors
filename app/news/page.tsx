@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { listPublishedPosts } from "@/lib/backendStore";
-import { absoluteUrl, postPath } from "@/lib/content";
+import { absoluteUrl, contentFallbackImage, postPath } from "@/lib/content";
 import SiteNav from "@/components/SiteNav";
 import ContentImage from "@/components/ContentImage";
 import PublicPagination from "@/components/PublicPagination";
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   alternates: { canonical: absoluteUrl("/news") },
 };
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 9;
 
 export default async function NewsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
@@ -41,7 +41,7 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
       <section className="content-grid">
         {posts.length ? posts.map((post) => (
           <article className="content-card" key={post.id}>
-            <ContentImage src={post.coverImage} alt={post.imageAlt || post.title} />
+            <ContentImage src={post.coverImage} fallback={contentFallbackImage(post)} alt={post.imageAlt || post.title} />
             <div><span>{post.publishDate} · {post.category}</span><h2><Link href={postPath(post)}>{post.title}</Link></h2><p>{post.excerpt}</p><small>Source: {post.sourceName || post.source || "COWIN"}</small></div>
           </article>
         )) : <article className="content-empty"><h2>No published news yet</h2><p>Published news will appear here.</p></article>}

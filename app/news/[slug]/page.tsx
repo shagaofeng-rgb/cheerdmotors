@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { findPublishedPost } from "@/lib/backendStore";
-import { absoluteUrl, markdownToBlocks, postPath, productUrl } from "@/lib/content";
+import { absoluteUrl, contentFallbackImage, markdownToBlocks, postPath, productUrl } from "@/lib/content";
 import SiteNav from "@/components/SiteNav";
 import ContentImage from "@/components/ContentImage";
 import { products, type ProductSlug } from "@/lib/site";
@@ -50,7 +50,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
         <h1>{post.title}</h1>
         <p className="article-summary">{post.excerpt}</p>
         <div className="article-meta"><span>Published {post.publishDate}</span><span>Updated {post.updatedAt.slice(0, 10)}</span><span>By {post.author}</span></div>
-        <ContentImage className="article-cover" src={post.coverImage} alt={post.imageAlt || post.title} eager />
+        <ContentImage className="article-cover" src={post.coverImage} fallback={contentFallbackImage(post)} alt={post.imageAlt || post.title} eager />
         <section className="source-panel">
           <strong>Original source</strong>
           <p>{post.sourceName || post.source} · {post.sourcePublishedAt?.slice(0, 10) || "Source date recorded"}</p>

@@ -13,6 +13,11 @@ export function postPath(post: Pick<ContentPost, "type" | "slug">) {
   return `/${post.type}/${post.slug}`;
 }
 
+export function contentFallbackImage(post: Pick<ContentPost, "type" | "relatedProductSlugs">) {
+  const relatedSlug = post.relatedProductSlugs?.find((slug) => slug in products) as ProductSlug | undefined;
+  return products[relatedSlug || (post.type === "news" ? "xceed" : "xcite")].image;
+}
+
 export function cleanText(value: string, limit = 5000) {
   return decodeHtmlEntities(value)
     .replace(/<script[\s\S]*?<\/script>/gi, " ")

@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { findPublishedPost } from "@/lib/backendStore";
-import { absoluteUrl, markdownToBlocks, postPath, productUrl } from "@/lib/content";
+import { absoluteUrl, contentFallbackImage, markdownToBlocks, postPath, productUrl } from "@/lib/content";
 import SiteNav from "@/components/SiteNav";
 import ContentImage from "@/components/ContentImage";
 import { products, type ProductSlug } from "@/lib/site";
@@ -28,7 +28,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
       <article className="article-shell">
         <nav className="breadcrumbs"><Link href="/">Home</Link><span>/</span><Link href="/blog">Blog</Link><span>/</span><span>{post.title}</span></nav>
         <p className="eyebrow">{post.category}</p><h1>{post.title}</h1><p className="article-summary">{post.excerpt}</p>
-        <ContentImage className="article-cover" src={post.coverImage} alt={post.imageAlt || post.title} eager />
+        <ContentImage className="article-cover" src={post.coverImage} fallback={contentFallbackImage(post)} alt={post.imageAlt || post.title} eager />
         <section className="article-body">{markdownToBlocks(post.content).map((block, index) => block.type === "heading" ? <h2 key={index}>{block.text}</h2> : <p key={index}>{block.text}</p>)}</section>
         <section className="related-products"><h2>Related COWIN products</h2>{related.map((product) => <Link href={productUrl(product.slug)} key={product.slug}><strong>{product.name}</strong><span>{product.category}</span></Link>)}</section>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
