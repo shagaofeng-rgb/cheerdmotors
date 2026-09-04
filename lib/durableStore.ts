@@ -3,6 +3,12 @@ import path from "node:path";
 
 type RedisResult<T> = { result?: T; error?: string };
 
+class DurableStoreRequestError extends Error {
+  constructor(message: string, readonly retryable: boolean) {
+    super(message);
+  }
+}
+
 const LOCAL_DATA_DIR = process.env.VERCEL ? path.join("/tmp", "cheerdmotors-commerce") : path.join(process.cwd(), ".data");
 const KV_URL = (process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || "").replace(/\/$/, "");
 const KV_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || "";
@@ -38,17 +44,35 @@ function safeJson<T>(value: string | null | undefined): T | null {
 }
 
 async function kvPipeline<T>(commands: string[][]) {
-  const response = await fetch(`${KV_URL}/pipeline`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${KV_TOKEN}`, "Content-Type": "application/json" },
-    body: JSON.stringify(commands),
-    cache: "no-store",
-  });
-  if (!response.ok) throw new Error(`Durable store request failed: ${response.status}`);
-  const payload = (await response.json()) as RedisResult<T>[];
-  const error = payload.find((item) => item.error)?.error;
-  if (error) throw new Error(`Durable store command failed: ${error}`);
-  return payload.map((item) => item.result);
+  const body = JSON.stringify(commands);
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      const response = await fetch(`${KV_URL}/pipeline`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${KV_TOKEN}`, "Content-Type": "application/json" },
+        body,
+        cache: "no-store",
+        signal: AbortSignal.timeout(12_000),
+      });
+      if (!response.ok) {
+        const retryable = response.status === 429 || response.status >= 500;
+        throw new DurableStoreRequestError(`Durable store request failed: ${response.status}`, retryable);
+      } else {
+        const payload = (await response.json()) as RedisResult<T>[];
+        const error = payload.find((item) => item.error)?.error;
+        if (error) throw new DurableStoreRequestError(`Durable store command failed: ${error}`, false);
+        return payload.map((item) => item.result);
+      }
+    } catch (error) {
+      lastError = error;
+      if ((error instanceof DurableStoreRequestError && !error.retryable) || attempt === 3) throw error;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 150 * attempt));
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("Durable store request failed");
 }
 
 export async function appendStoreLine(fileName: string, value: unknown) {

@@ -23,7 +23,7 @@ The site uses Next.js 16 on Vercel and a Vercel KV/Upstash-compatible REST store
 - Google Search Console integration is configured for `sc-domain:cheerdmotors.com`.
 - Google Search sync is scheduled every three days and the stored snapshot has no error.
 - Blog remains available for manual publication and public reading.
-- Blog automatic publication has no Cron, webhook, queue consumer, hidden route, or workflow entry.
+- Blog automatic fetching/generation has no Cron, queue consumer, or workflow entry. An authenticated external manual publishing webhook was restored on 2026-09-04.
 - Protected admin and Cron APIs reject unauthenticated calls with HTTP 401.
 - The production deployment recorded no runtime error cluster and no 5xx response during acceptance testing.
 
@@ -96,7 +96,8 @@ No backup contains newly generated credentials in this repository. Existing prod
 | News automation | Fetch, filter, deduplicate, generate and publish News | Vercel Cron, daily at `0 8 * * *` UTC | Approved RSS feeds and existing posts | Published News plus execution log | Enabled; latest complete run 4 published, 0 errors |
 | Google Search sync | Import Search Console query/page/country/device/date data | Vercel Cron, `0 9 */3 * *` UTC | Search Console API | Snapshot and execution log | Configured; three-day minimum also enforced in code |
 | Blog manual publishing | Create and edit Blog content through admin APIs | Authenticated manual action | Admin form | Blog post in KV | Available |
-| Blog automatic publishing | Previously requested to be removed | None | None | None | Disabled and code entry points absent |
+| External Blog webhook | Accept manual pushes from the configured third-party plugin | Authenticated external POST | Signed Blog article fields | Published Blog post in KV | Restored; no schedule |
+| Blog automatic fetching/generation | Previously requested to be removed | None | None | None | Disabled and code entry points absent |
 | Inquiry notification | Send saved inquiry by email | Contact submission | Inquiry record | Resend email plus log | Blocked by missing Resend credential |
 | Newsletter storage | Save consenting subscribers | Footer form | Email/source | Deduplicated KV record | Enabled |
 | Checkout order creation | Create idempotent quote/order records | Checkout form | Customer/product/configuration | Durable pending-payment order | Enabled; manual payment mode |
@@ -136,8 +137,9 @@ The immediately following run returned `target_reached`, published 0, and record
 
 - `vercel.json` contains no Blog Cron.
 - There is no `/api/cron/blog` route; production returns HTTP 404.
-- There is no `send_article` webhook or root POST publication forwarding route.
-- Code search found only authenticated manual Blog management and public Blog reads.
+- The external manual `send_article` webhook and root POST forwarding route were restored on 2026-09-04.
+- The webhook requires the server-only `WEBHOOK_ARTICLE_SIGN`, accepts only `class_id=blog`, separates connection verification from publication, and deduplicates identical payloads.
+- Code search found no scheduled Blog fetcher, generator, or auto-publication task.
 - Existing 30 Blog posts remain available and were not deleted.
 
 ### Google Search

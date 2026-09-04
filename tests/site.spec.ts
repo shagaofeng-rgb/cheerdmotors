@@ -90,3 +90,15 @@ test("protected APIs reject unauthenticated requests and test analytics is not s
   expect(health.headers()["x-content-type-options"]).toBe("nosniff");
   expect(health.headers()["x-frame-options"]).toBe("DENY");
 });
+
+test("external Blog webhook is routed but remains protected", async ({ request }) => {
+  for (const route of ["/", "/api/webhook/send_article"]) {
+    const response = await request.post(route, {
+      form: { sign: "invalid-playwright-diagnostic", class_id: "blog" },
+    });
+    expect(response.status(), route).toBe(200);
+    expect(response.headers()["content-type"], route).toContain("application/json");
+    expect(await response.json(), route).toMatchObject({ code: 0, msg: "API KEY错误" });
+  }
+  expect((await request.get("/api/cron/blog")).status()).toBe(404);
+});
