@@ -4,6 +4,7 @@ import { products, productSlugs, type ProductSlug } from "@/lib/site";
 import { readAnalyticsEvents, readStoreOrders, type AnalyticsEvent, type StoreOrder } from "@/lib/commerceStore";
 import { buildVisitorProfiles, channelForEvent, enrichEvent, groupCounts, isRealEvent, trafficTrend } from "@/lib/trafficAnalytics";
 import { decodeHtmlEntities } from "@/lib/text";
+import { rebrandLegacyText } from "@/lib/brand";
 
 const STORE_FILE = "admin-store.json";
 
@@ -160,10 +161,41 @@ function slugify(value: string) {
 
 export async function readAdminStore() {
   const stored = await readStoreObject<AdminStore>(STORE_FILE);
-  if (stored) return stored;
+  if (stored) return normalizeAdminStoreBranding(stored);
   const seeded = createSeedStore();
   await writeStoreObject(STORE_FILE, seeded);
   return seeded;
+}
+
+function normalizeAdminStoreBranding(store: AdminStore): AdminStore {
+  const brand = (value: string) => rebrandLegacyText(value || "");
+  return {
+    ...store,
+    categories: store.categories.map((category) => ({
+      ...category,
+      description: brand(category.description),
+      seoTitle: brand(category.seoTitle),
+      seoDescription: brand(category.seoDescription),
+    })),
+    products: store.products.map((product) => ({
+      ...product,
+      shortDescription: brand(product.shortDescription),
+      fullDescription: brand(product.fullDescription),
+      keyFeatures: product.keyFeatures.map(brand),
+      specifications: product.specifications.map((item) => ({ label: brand(item.label), value: brand(item.value) })),
+      applicationScenarios: product.applicationScenarios.map(brand),
+      sku: product.sku.replace(/^CM-/, "CW-"),
+      shippingInfo: brand(product.shippingInfo),
+      seoTitle: brand(product.seoTitle),
+      seoDescription: brand(product.seoDescription),
+    })),
+    media: store.media.map((asset) => ({ ...asset, alt: brand(asset.alt), usage: asset.usage.map(brand) })),
+    posts: store.posts.map(normalizeContentPost),
+    settings: {
+      ...store.settings,
+      companyName: brand(store.settings.companyName) || "COWIN",
+    },
+  };
 }
 
 export async function writeAdminStore(updater: (store: AdminStore) => AdminStore) {
@@ -208,7 +240,7 @@ function normalizeContentPost(post: ContentPost): ContentPost {
   const coverImage = KNOWN_BROKEN_COVERS.has(decodedCover)
     ? products[relatedSlug || "xceed"].image
     : decodedCover || products[relatedSlug || "xceed"].image;
-  const decoded = (value?: string) => decodeHtmlEntities(value || "");
+  const decoded = (value?: string) => rebrandLegacyText(decodeHtmlEntities(value || ""));
   return {
     ...post,
     title: decoded(post.title),
@@ -357,10 +389,10 @@ function createSeedStore(): AdminStore {
       id: `cat-${index + 1}`,
       name,
       slug: slugify(name),
-      description: `CHEERDMOTO ${name} category for retail, dealer and service workflows.`,
+      description: `COWIN ${name} category for retail, dealer and service workflows.`,
       coverImage: firstProduct.image,
-      seoTitle: `${name} | CHEERDMOTO`,
-      seoDescription: `Manage CHEERDMOTO ${name} products, specs, price, stock and SEO fields.`,
+      seoTitle: `${name} | COWIN`,
+      seoDescription: `Manage COWIN ${name} products, specs, price, stock and SEO fields.`,
       sortOrder: index + 1,
       status: "published" as const,
       parentId: "",
@@ -379,20 +411,20 @@ function createSeedStore(): AdminStore {
       categoryName: product.category,
       coverImage: product.image,
       galleryImages,
-      shortDescription: `${product.name} for CHEERDMOTO retail, dealer and service sales.`,
-      fullDescription: `${product.name} is connected to the Cheerdmoto admin system for product CMS, pricing, stock, SEO, media and order workflows.`,
+      shortDescription: `${product.name} for COWIN retail, dealer and service sales.`,
+      fullDescription: `${product.name} is connected to the COWIN admin system for product CMS, pricing, stock, SEO, media and order workflows.`,
       keyFeatures: product.specs,
       specifications: product.specs.map((value, specIndex) => ({ label: ["System", "Peak Power", "Speed", "Ownership"][specIndex] || `Spec ${specIndex + 1}`, value })),
       applicationScenarios: ["Retail", "Dealer sales", "Service parts", "Fleet support"],
       priceCents: cents(product.priceAmount),
       salePriceCents: 0,
       currency: "USD" as const,
-      sku: `CM-${String(slug).toUpperCase()}`,
+      sku: `CW-${String(slug).toUpperCase()}`,
       stock: 20,
       moq: 1,
       weightDimension: "Confirm by model and export packaging.",
       shippingInfo: "Shipping method can be confirmed after order or dealer quote.",
-      seoTitle: `${product.name} | CHEERDMOTO`,
+      seoTitle: `${product.name} | COWIN`,
       seoDescription: `${product.name} for electric mobility retail, dealer and support programs.`,
       status: "published" as const,
       sortOrder: index + 1,
@@ -420,17 +452,17 @@ function createSeedStore(): AdminStore {
       id: "post-electric-dirt-bike-buying-guide",
       type: "blog",
       slug: "electric-dirt-bike-buying-guide",
-      title: "Electric Dirt Bike Buying Guide for CHEERDMOTO Customers",
+      title: "Electric Dirt Bike Buying Guide for COWIN Customers",
       excerpt: "How to compare system voltage, peak power, range, service support and dealer fit.",
       coverImage: "/volt-lab/products/xceed_transparent.png",
       category: "Buying Guide",
       content: "## Compare the platform\n\nUse power, range, torque and ownership support together rather than one spec alone.",
       publishDate: createdAt.slice(0, 10),
-      author: "CHEERDMOTO Editorial Team",
+      author: "COWIN Editorial Team",
       source: "",
       tags: ["Electric Dirt Bike", "Buying Guide"],
-      seoTitle: "Electric Dirt Bike Buying Guide | CHEERDMOTO",
-      seoDescription: "Compare CHEERDMOTO electric dirt bike platforms by real ownership factors.",
+      seoTitle: "Electric Dirt Bike Buying Guide | COWIN",
+      seoDescription: "Compare COWIN electric dirt bike platforms by real ownership factors.",
       status: "published",
       createdAt,
       updatedAt: createdAt,
@@ -442,7 +474,7 @@ function createSeedStore(): AdminStore {
     media,
     posts,
     settings: {
-      companyName: "CHEERDMOTO",
+      companyName: "COWIN",
       adminNotificationEmail: process.env.ADMIN_NOTIFICATION_EMAIL || "admin@cheerdmotors.com",
       contactEmail: "support@cheerdmotors.com",
       whatsapp: "",

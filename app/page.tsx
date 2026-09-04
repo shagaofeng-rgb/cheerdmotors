@@ -9,8 +9,8 @@ import { listStorefrontProducts } from "@/lib/storefrontCatalog";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "CHEERDMOTO | Electric Bikes & Smart Mobility",
-  description: "Explore CHEERDMOTO electric dirt bikes, daily e-bikes and compact smart mobility products with real specifications, pricing and ownership support.",
+  title: "COWIN | Electric Bikes & Smart Mobility",
+  description: "Explore COWIN electric dirt bikes, daily e-bikes and compact smart mobility products with real specifications, pricing and ownership support.",
   alternates: { canonical: absoluteUrl("/") },
 };
 
@@ -91,7 +91,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ n
             </h1>
           </div>
           <div className="home-c-intro-copy">
-            <p>From off-road power to everyday rides and compact mobility, CHEERDMOTO builds electric machines around real lives.</p>
+            <p>From off-road power to everyday rides and compact mobility, COWIN builds electric machines around real lives.</p>
             <div className="home-c-actions">
               <Link className="home-c-button lime" href="#choose-your-ride">Explore models <ArrowRight size={17} /></Link>
               <Link className="home-c-text-link" href="/contact">Talk to our team <ArrowRight size={16} /></Link>
@@ -191,7 +191,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ n
       <footer className="home-c-footer">
         <div className="home-c-container home-c-footer-grid">
           <div className="home-c-footer-brand">
-            <Link className="brand" href="/">CHEERDMOTO</Link>
+            <Link className="brand" href="/">COWIN</Link>
             <p>Electric machines for trail, city and everyday independence.</p>
           </div>
           <nav className="home-c-footer-links" aria-label="Footer navigation">
@@ -221,7 +221,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ n
             <button type="submit" aria-label="Subscribe to product updates"><ArrowRight size={19} /></button>
           </form>
           <div className="home-c-legal">
-            <span>© 2026 CHEERDMOTO. All rights reserved.</span>
+            <span>© 2026 COWIN. All rights reserved.</span>
             <span><Link href="/privacy">Privacy</Link> / <Link href="/terms">Terms</Link></span>
           </div>
         </div>

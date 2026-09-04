@@ -4,8 +4,8 @@ import { products, productSlugs } from "@/lib/site";
 import SiteNav from "@/components/SiteNav";
 
 export const metadata: Metadata = {
-  title: "Contact CHEERDMOTO | Product Inquiry",
-  description: "Send CHEERDMOTO a product inquiry about electric dirt bikes, e-bikes, smart wheelchairs or accessories.",
+  title: "Contact COWIN | Product Inquiry",
+  description: "Send COWIN a product inquiry about electric dirt bikes, e-bikes, smart wheelchairs or accessories.",
   alternates: { canonical: absoluteUrl("/contact") },
 };
 
@@ -15,7 +15,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
     <main className="content-site">
       <SiteNav />
       {sent === "1" ? <p className="form-notice" role="status">Your inquiry was saved successfully. Our team will follow up using the contact details you provided.</p> : null}
-      <section className="content-hero"><p className="eyebrow">Contact</p><h1>Ask about a CHEERDMOTO product.</h1><p>Send a retail, dealer, support or product availability question. Your inquiry is saved into the backend lead system.</p></section>
+      <section className="content-hero"><p className="eyebrow">Contact</p><h1>Ask about a COWIN product.</h1><p>Send a retail, dealer, support or product availability question. Your inquiry is saved into the backend lead system.</p></section>
       <section className="contact-panel">
         <form className="contact-form" action="/api/contact/inquiry" method="post">
           <input type="hidden" name="page" value="/contact" />

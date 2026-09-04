@@ -5,8 +5,8 @@ import { CategoryPage, categoryPages } from "../category-content";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Electric Wheelchairs | CHEERDMOTO",
-  description: "Explore the CHEERDMOTO SMART B02 electric wheelchair for daily mobility, compact handling and support.",
+  title: "Electric Wheelchairs | COWIN",
+  description: "Explore the COWIN SMART B02 electric wheelchair for daily mobility, compact handling and support.",
   alternates: { canonical: absoluteUrl("/electric-wheelchairs") },
 };
 

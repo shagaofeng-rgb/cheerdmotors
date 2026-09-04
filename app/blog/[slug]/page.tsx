@@ -21,7 +21,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
   const post = await findPublishedPost("blog", slug);
   if (!post) notFound();
   const related = (post.relatedProductSlugs?.length ? post.relatedProductSlugs : ["xceed"]).map((relatedSlug) => products[relatedSlug as ProductSlug]).filter(Boolean);
-  const jsonLd = { "@context": "https://schema.org", "@type": "BlogPosting", headline: post.title, description: post.seoDescription || post.excerpt, image: [absoluteUrl(post.coverImage)], datePublished: post.createdAt, dateModified: post.updatedAt, author: { "@type": "Organization", name: post.author || "CHEERDMOTO" }, publisher: { "@type": "Organization", name: "CHEERDMOTO", url: absoluteUrl("/") }, mainEntityOfPage: absoluteUrl(postPath(post)), about: related.map((product) => product.name) };
+  const jsonLd = { "@context": "https://schema.org", "@type": "BlogPosting", headline: post.title, description: post.seoDescription || post.excerpt, image: [absoluteUrl(post.coverImage)], datePublished: post.createdAt, dateModified: post.updatedAt, author: { "@type": "Organization", name: post.author || "COWIN" }, publisher: { "@type": "Organization", name: "COWIN", url: absoluteUrl("/") }, mainEntityOfPage: absoluteUrl(postPath(post)), about: related.map((product) => product.name) };
   return (
     <main className="content-site">
       <SiteNav />
@@ -30,7 +30,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
         <p className="eyebrow">{post.category}</p><h1>{post.title}</h1><p className="article-summary">{post.excerpt}</p>
         <ContentImage className="article-cover" src={post.coverImage} alt={post.imageAlt || post.title} eager />
         <section className="article-body">{markdownToBlocks(post.content).map((block, index) => block.type === "heading" ? <h2 key={index}>{block.text}</h2> : <p key={index}>{block.text}</p>)}</section>
-        <section className="related-products"><h2>Related CHEERDMOTO products</h2>{related.map((product) => <Link href={productUrl(product.slug)} key={product.slug}><strong>{product.name}</strong><span>{product.category}</span></Link>)}</section>
+        <section className="related-products"><h2>Related COWIN products</h2>{related.map((product) => <Link href={productUrl(product.slug)} key={product.slug}><strong>{product.name}</strong><span>{product.category}</span></Link>)}</section>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </article>
     </main>

@@ -24,7 +24,7 @@ export function notificationStatus() {
     resendConfigured: Boolean(value("RESEND_API_KEY")),
     smtpConfigured: Boolean(value("SMTP_HOST") && value("SMTP_USER") && value("SMTP_PASSWORD")),
     to: value("ADMIN_NOTIFICATION_EMAIL") || value("INQUIRY_RECEIVER_EMAIL") || "admin@cheerdmotors.com",
-    from: value("RESEND_FROM") || value("SMTP_FROM") || "CHEERDMOTO <no-reply@cheerdmotors.com>",
+    from: value("RESEND_FROM") || value("SMTP_FROM") || "COWIN <no-reply@cheerdmotors.com>",
   };
 }
 
@@ -40,9 +40,9 @@ async function sendResendEmail(payload: InquiryNotificationPayload) {
     body: JSON.stringify({
       from: status.from,
       to: [status.to],
-      subject: `New CHEERDMOTO inquiry: ${payload.product || payload.name || payload.email}`,
-      html: `<h2>New CHEERDMOTO inquiry</h2><p><strong>Name:</strong> ${escapeHtml(payload.name)}</p><p><strong>Email:</strong> ${escapeHtml(payload.email)}</p><p><strong>Phone:</strong> ${escapeHtml(payload.phone)}</p><p><strong>Company:</strong> ${escapeHtml(payload.company)}</p><p><strong>Country:</strong> ${escapeHtml(payload.country)}</p><p><strong>Product:</strong> ${escapeHtml(payload.product)}</p><p><strong>Page:</strong> ${escapeHtml(payload.page)}</p><p><strong>Message:</strong><br>${escapeHtml(payload.message).replace(/\n/g, "<br>")}</p>`,
-      text: `New CHEERDMOTO inquiry\nName: ${payload.name}\nEmail: ${payload.email}\nPhone: ${payload.phone}\nCompany: ${payload.company}\nCountry: ${payload.country}\nProduct: ${payload.product}\nPage: ${payload.page}\nMessage:\n${payload.message}`,
+      subject: `New COWIN inquiry: ${payload.product || payload.name || payload.email}`,
+      html: `<h2>New COWIN inquiry</h2><p><strong>Name:</strong> ${escapeHtml(payload.name)}</p><p><strong>Email:</strong> ${escapeHtml(payload.email)}</p><p><strong>Phone:</strong> ${escapeHtml(payload.phone)}</p><p><strong>Company:</strong> ${escapeHtml(payload.company)}</p><p><strong>Country:</strong> ${escapeHtml(payload.country)}</p><p><strong>Product:</strong> ${escapeHtml(payload.product)}</p><p><strong>Page:</strong> ${escapeHtml(payload.page)}</p><p><strong>Message:</strong><br>${escapeHtml(payload.message).replace(/\n/g, "<br>")}</p>`,
+      text: `New COWIN inquiry\nName: ${payload.name}\nEmail: ${payload.email}\nPhone: ${payload.phone}\nCompany: ${payload.company}\nCountry: ${payload.country}\nProduct: ${payload.product}\nPage: ${payload.page}\nMessage:\n${payload.message}`,
       reply_to: payload.email || undefined,
     }),
     cache: "no-store",

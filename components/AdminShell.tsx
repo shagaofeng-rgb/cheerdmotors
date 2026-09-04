@@ -14,8 +14,8 @@ export default async function AdminShell({ active, children }: { active: string;
     <main className="admin-dashboard">
       <aside className="admin-sidebar">
         <a className="admin-logo" href="/admin">
-          <span>CM</span>
-          <strong>CHEERDMOTO 后台</strong>
+          <span>CW</span>
+          <strong>COWIN 后台</strong>
         </a>
         <nav>
           {navGroups.map((group) => <div className="admin-nav-group" key={group.label}><span>{group.label}</span>{group.items.map((item) => <a className={active === item.key || active === item.label ? "is-active" : ""} href={item.href} key={item.href}>{item.label}</a>)}</div>)}

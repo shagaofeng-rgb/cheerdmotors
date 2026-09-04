@@ -6,10 +6,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "CHEERDMOTO | Intelligent Electric Mobility", template: "%s" },
+  title: { default: "COWIN | Intelligent Electric Mobility", template: "%s" },
   description:
-    "CHEERDMOTO electric dirt bikes, e-bikes, smart mobility platforms, and support programs.",
-  openGraph: { siteName: "CHEERDMOTO", type: "website" },
+    "COWIN electric dirt bikes, e-bikes, smart mobility platforms, and support programs.",
+  openGraph: { siteName: "COWIN", type: "website" },
   robots: { index: true, follow: true },
 };
 

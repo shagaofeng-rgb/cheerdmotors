@@ -158,21 +158,21 @@ function articleContent(item: FeedItem, relatedSlugs: ProductSlug[]) {
   const facts = sourceSummary
     ? `${item.sourceName} reported this electric mobility development: ${sourceSummary}`
     : `${item.sourceName} reported a recent development related to electric mobility.`;
-  const perspective = "For CHEERDMOTO customers, the useful signal is how this development may affect range expectations, battery confidence, service support, ownership cost and model selection.";
+  const perspective = "For COWIN customers, the useful signal is how this development may affect range expectations, battery confidence, service support, ownership cost and model selection.";
   const customerImpact = `Customers comparing ${productNames} can use this context to ask better questions about ride scenario, parts support, comfort, power and long-term maintenance.`;
-  const ourHelp = "CHEERDMOTO connects product specifications, category pages and ownership support so customers can move from industry context to a practical product decision.";
+  const ourHelp = "COWIN connects product specifications, category pages and ownership support so customers can move from industry context to a practical product decision.";
   return {
     facts,
     perspective,
     customerImpact,
     ourHelp,
-    body: `## Original news fact summary\n\n${facts}\n\n## Why this matters\n\n${perspective}\n\n## Relationship to customers\n\n${customerImpact}\n\n## How CHEERDMOTO can help\n\n${ourHelp}\n\n## Related products\n\nThis analysis is connected to ${productNames}.`,
+    body: `## Original news fact summary\n\n${facts}\n\n## Why this matters\n\n${perspective}\n\n## Relationship to customers\n\n${customerImpact}\n\n## How COWIN can help\n\n${ourHelp}\n\n## Related products\n\nThis analysis is connected to ${productNames}.`,
   };
 }
 
 async function fetchFeed(feed: string) {
   const response = await fetch(feed, {
-    headers: { "User-Agent": "CHEERDMOTO-NewsBot/2.0 (+https://cheerdmotors.com/news)" },
+    headers: { "User-Agent": "COWIN-NewsBot/2.0 (+https://cheerdmotors.com/news)" },
     cache: "no-store",
     signal: AbortSignal.timeout(15000),
   });
@@ -322,10 +322,10 @@ export async function runNewsAutomation(options: { dryRun?: boolean } = {}) {
       category: "Industry News",
       content: content.body,
       publishDate: today,
-      author: "CHEERDMOTO Editorial Team",
+      author: "COWIN Editorial Team",
       source: item.sourceName,
       tags: ["electric mobility", "industry news", ...relatedProductSlugs],
-      seoTitle: `${item.title.slice(0, 62)} | CHEERDMOTO News`,
+      seoTitle: `${item.title.slice(0, 62)} | COWIN News`,
       seoDescription: cleanText(`${content.facts} ${content.perspective}`, 155),
       status: "published",
       createdAt,
@@ -342,13 +342,13 @@ export async function runNewsAutomation(options: { dryRun?: boolean } = {}) {
       perspective: content.perspective,
       customerImpact: content.customerImpact,
       ourHelp: content.ourHelp,
-      geoSummary: `CHEERDMOTO connects this ${item.sourceName} report to product selection, ownership support and related electric mobility models.`,
+      geoSummary: `COWIN connects this ${item.sourceName} report to product selection, ownership support and related electric mobility models.`,
       faq: [
         { question: "What source is cited?", answer: `${item.sourceName}, originally published on ${item.publishedAt.slice(0, 10)}.` },
-        { question: "Which CHEERDMOTO products are related?", answer: relatedProductSlugs.map((slug) => products[slug]?.name).filter(Boolean).join(", ") },
+        { question: "Which COWIN products are related?", answer: relatedProductSlugs.map((slug) => products[slug]?.name).filter(Boolean).join(", ") },
       ],
       relatedProductSlugs,
-      imageAlt: `${primaryProduct.name} - related CHEERDMOTO product`,
+      imageAlt: `${primaryProduct.name} - related COWIN product`,
       imageSourceUrl: primaryProduct.image,
       imagePageUrl: `/products/${primaryProduct.slug}`,
       automationStatus: "published",

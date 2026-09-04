@@ -9,8 +9,8 @@ import PublicPagination from "@/components/PublicPagination";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "CHEERDMOTO News | Electric Mobility Industry Updates",
-  description: "Recent electric mobility news with CHEERDMOTO analysis, source attribution, related products, SEO and GEO context.",
+  title: "COWIN News | Electric Mobility Industry Updates",
+  description: "Recent electric mobility news with COWIN analysis, source attribution, related products, SEO and GEO context.",
   alternates: { canonical: absoluteUrl("/news") },
 };
 
@@ -31,8 +31,8 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
       <SiteNav />
       <section className="content-hero">
         <h1>Electric mobility news, filtered for product decisions.</h1>
-        <p>Every published item keeps the original source visible, adds CHEERDMOTO analysis, and links readers to relevant product categories.</p>
-        <span className="content-hero-label">CHEERDMOTO / Global News</span>
+        <p>Every published item keeps the original source visible, adds COWIN analysis, and links readers to relevant product categories.</p>
+        <span className="content-hero-label">COWIN / Global News</span>
       </section>
       <section className="content-filters">
         <Link className={!category ? "is-active" : ""} href="/news">All</Link>
@@ -42,7 +42,7 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
         {posts.length ? posts.map((post) => (
           <article className="content-card" key={post.id}>
             <ContentImage src={post.coverImage} alt={post.imageAlt || post.title} />
-            <div><span>{post.publishDate} · {post.category}</span><h2><Link href={postPath(post)}>{post.title}</Link></h2><p>{post.excerpt}</p><small>Source: {post.sourceName || post.source || "CHEERDMOTO"}</small></div>
+            <div><span>{post.publishDate} · {post.category}</span><h2><Link href={postPath(post)}>{post.title}</Link></h2><p>{post.excerpt}</p><small>Source: {post.sourceName || post.source || "COWIN"}</small></div>
           </article>
         )) : <article className="content-empty"><h2>No published news yet</h2><p>Published news will appear here.</p></article>}
       </section>

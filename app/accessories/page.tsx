@@ -5,8 +5,8 @@ import { CategoryPage, categoryPages } from "../category-content";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Parts and Accessories | CHEERDMOTO",
-  description: "Shop managed CHEERDMOTO battery, brake and charging accessories with verified fitment and support.",
+  title: "Parts and Accessories | COWIN",
+  description: "Shop managed COWIN battery, brake and charging accessories with verified fitment and support.",
   alternates: { canonical: absoluteUrl("/accessories") },
 };
 

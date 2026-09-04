@@ -106,7 +106,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
     primaryCta: "Explore e-bikes",
     secondaryCta: "Compare models",
     heroImage: "/volt-lab/category/e-bikes/e_bike_use_hero_scene.png",
-    heroAlt: "CHEERDMOTO electric bikes in a blue city scene",
+    heroAlt: "COWIN electric bikes in a blue city scene",
     stats: [
       ["3", "daily ride models"],
       ["$499", "starting price"],
@@ -194,11 +194,11 @@ export const categoryPages: Record<string, CategoryPageData> = {
     title: "Precision upgrades.",
     titleAccent: "Genuine performance.",
     copy:
-      "Genuine CHEERDMOTO parts and accessories engineered for perfect fit, lasting durability and peak performance.",
+      "Genuine COWIN parts and accessories engineered for perfect fit, lasting durability and peak performance.",
     primaryCta: "Shop all parts",
     secondaryCta: "View guides",
     heroImage: "/volt-lab/category/accessories/parts_accessories_use_hero_scene.png",
-    heroAlt: "CHEERDMOTO parts and accessories on a blue ring platform",
+    heroAlt: "COWIN parts and accessories on a blue ring platform",
     stats: [
       ["Genuine", "parts"],
       ["Perfect", "fit"],
@@ -229,7 +229,7 @@ export const categoryPages: Record<string, CategoryPageData> = {
         ][index],
       price:
         ["$1,199.00", "$49.00", "$49.00", "$29.00", "$49.00", "From $59.00", "From $69.00", "$249.00", "$39.00", "$69.00", "$199.00", "$79.00", "$29.00", "$69.00", "$29.00"][index],
-      specs: ["CHEERDMOTO"],
+      specs: ["COWIN"],
       slug: index === 0 ? "battery-pack" : index === 1 ? "brake-kit" : index === 7 ? "smart-charger" : undefined,
       badge: index === 2 || index === 8 || index === 14 ? "Sale" : undefined,
     })),
@@ -276,7 +276,7 @@ export async function CategoryPage({ data }: { data: CategoryPageData }) {
             <a className="category-secondary-action" href="#compare">{data.secondaryCta} <ArrowRight size={16} /></a>
           </div>
         </div>
-        <span className="category-hero-label">CHEERDMOTO / {data.eyebrow}</span>
+        <span className="category-hero-label">COWIN / {data.eyebrow}</span>
       </section>
 
       <section className="category-stats" aria-label="Category highlights">
@@ -369,7 +369,7 @@ function CategoryFooter() {
     <footer className="category-footer">
       <div className="category-footer-inner">
         <div className="category-footer-brand">
-          <Link className="brand" href="/">CHEERDMOTO</Link>
+          <Link className="brand" href="/">COWIN</Link>
           <p>Electric machines for trail, city and everyday independence.</p>
         </div>
         <nav className="category-footer-links" aria-label="Footer navigation">
@@ -396,7 +396,7 @@ function CategoryFooter() {
           <button type="submit" aria-label="Subscribe to product updates"><ArrowRight size={19} /></button>
         </form>
         <div className="category-legal">
-          <span>© 2026 CHEERDMOTO. All rights reserved.</span>
+          <span>© 2026 COWIN. All rights reserved.</span>
           <span><Link href="/privacy">Privacy</Link> / <Link href="/terms">Terms</Link></span>
         </div>
       </div>

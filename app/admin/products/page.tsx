@@ -25,7 +25,7 @@ export default async function AdminProductsPage() {
           <input name="slug" placeholder="产品链接 slug，例如 xceed" required />
           <select name="categorySlug" required>{categories.map((category) => <option value={category.slug} key={category.id}>{category.name}</option>)}</select>
           <select name="status" defaultValue="draft"><option value="draft">草稿</option><option value="published">已发布</option><option value="unpublished">已下架</option><option value="scheduled">定时发布</option><option value="archived">已归档</option></select>
-          <input name="sku" placeholder="SKU / 型号，例如 CM-XCEED" />
+          <input name="sku" placeholder="SKU / 型号，例如 CW-XCEED" />
           <input name="stock" type="number" min="0" step="1" placeholder="库存数量" />
           <input name="price" type="number" min="0" step="1" placeholder="售价 USD" />
           <input name="compareAtPrice" type="number" min="0" step="1" placeholder="原价 / 划线价 USD" />

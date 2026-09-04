@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = await getStorefrontProduct(slug);
   if (!product) return {};
-  const title = `${product.name} | CHEERDMOTO`;
+  const title = `${product.name} | COWIN`;
   const description = product.shortDescription || product.description || `${product.name} product details, price, specifications and checkout.`;
   const url = absoluteUrl(`/products/${product.slug}`);
   const image = absoluteUrl(product.image);

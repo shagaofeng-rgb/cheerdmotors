@@ -205,7 +205,7 @@ function PaymentTrustBadges() {
       <CreditCard size={18} />
       <div>
         <strong>Secure credit card checkout</strong>
-        <span>Payment information is processed securely. CHEERDMOTO does not store card details.</span>
+        <span>Payment information is processed securely. COWIN does not store card details.</span>
       </div>
     </div>
   );

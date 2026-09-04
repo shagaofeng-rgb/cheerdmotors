@@ -35,8 +35,8 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
     image: [absoluteUrl(post.coverImage)],
     datePublished: post.createdAt,
     dateModified: post.updatedAt,
-    author: { "@type": "Organization", name: post.author || "CHEERDMOTO" },
-    publisher: { "@type": "Organization", name: "CHEERDMOTO", url: absoluteUrl("/") },
+    author: { "@type": "Organization", name: post.author || "COWIN" },
+    publisher: { "@type": "Organization", name: "COWIN", url: absoluteUrl("/") },
     mainEntityOfPage: absoluteUrl(postPath(post)),
     citation: post.sourceUrl || post.canonicalSourceUrl,
     about: related.map((product) => product.name),
@@ -58,7 +58,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
         </section>
         <section className="article-body">{markdownToBlocks(post.content).map((block, index) => block.type === "heading" ? <h2 key={index}>{block.text}</h2> : <p key={index}>{block.text}</p>)}</section>
         <section className="geo-panel"><h2>AI-readable summary</h2><p>{post.geoSummary || post.excerpt}</p></section>
-        <section className="related-products"><h2>Related CHEERDMOTO products</h2>{related.map((product) => <Link href={productUrl(product.slug)} key={product.slug}><strong>{product.name}</strong><span>{product.category}</span></Link>)}</section>
+        <section className="related-products"><h2>Related COWIN products</h2>{related.map((product) => <Link href={productUrl(product.slug)} key={product.slug}><strong>{product.name}</strong><span>{product.category}</span></Link>)}</section>
         {post.faq?.length ? <section className="faq-list"><h2>FAQ</h2>{post.faq.map((item) => <details key={item.question}><summary>{item.question}</summary><p>{item.answer}</p></details>)}</section> : null}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </article>

@@ -9,8 +9,8 @@ import PublicPagination from "@/components/PublicPagination";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "CHEERDMOTO Blog | Buying Guides and Product Knowledge",
-  description: "CHEERDMOTO buying guides, product knowledge, ownership advice and electric mobility comparison content.",
+  title: "COWIN Blog | Buying Guides and Product Knowledge",
+  description: "COWIN buying guides, product knowledge, ownership advice and electric mobility comparison content.",
   alternates: { canonical: absoluteUrl("/blog") },
 };
 
@@ -26,7 +26,7 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
   return (
     <main className="content-site editorial-c blog-c">
       <SiteNav />
-      <section className="content-hero"><h1>Product knowledge for better electric mobility decisions.</h1><p>Guides and explainers connected to CHEERDMOTO product categories and real ownership questions.</p><span className="content-hero-label">CHEERDMOTO / Buying Guides</span></section>
+      <section className="content-hero"><h1>Product knowledge for better electric mobility decisions.</h1><p>Guides and explainers connected to COWIN product categories and real ownership questions.</p><span className="content-hero-label">COWIN / Buying Guides</span></section>
       <section className="content-grid">
         {posts.length ? posts.map((post) => <article className="content-card" key={post.id}><ContentImage src={post.coverImage} alt={post.imageAlt || post.title} /><div><span>{post.publishDate} · {post.category}</span><h2><Link href={postPath(post)}>{post.title}</Link></h2><p>{post.excerpt}</p></div></article>) : <article className="content-empty"><h2>No published guides yet</h2><p>Published buying guides will appear here.</p></article>}
       </section>

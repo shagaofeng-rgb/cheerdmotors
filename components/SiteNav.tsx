@@ -74,7 +74,7 @@ export default function SiteNav() {
   return (
     <header className="nav-wrap" aria-label="Main navigation">
       <Link className="brand" href="/" onClick={() => setMenuOpen(false)}>
-        CHEERDMOTO
+        COWIN
       </Link>
       <nav className="desktop-nav" aria-label="Primary">
         {navigation.map((item) => <Link href={item.href} key={item.href}>{item.label}</Link>)}

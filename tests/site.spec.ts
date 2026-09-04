@@ -61,6 +61,18 @@ test("product facts and managed catalog stay consistent", async ({ page }) => {
   await expect.poll(() => page.locator(".category-product-card img").first().evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
 });
 
+test("COWIN branding is consistent across public surfaces", async ({ page, request }) => {
+  for (const route of ["/", "/electric-bikes", "/products/xceed", "/news", "/blog", "/contact", "/admin/login"]) {
+    await page.goto(route, { waitUntil: "domcontentloaded" });
+    await expect(page.locator("body"), route).toContainText("COWIN");
+    expect(await page.locator("body").innerText(), route).not.toMatch(/CHEERDMOTO(?!R)/i);
+  }
+
+  const rss = await request.get("/news/rss.xml");
+  expect(rss.status()).toBe(200);
+  expect(await rss.text()).not.toMatch(/CHEERDMOTO(?!R)/i);
+});
+
 test("SEO, accessibility and error handling are present", async ({ page, request }) => {
   for (const route of ["/", "/electric-dirt-bikes", "/electric-bikes", "/electric-wheelchairs", "/accessories", "/search", "/privacy", "/terms", "/checkout"]) {
     const response = await request.get(route);

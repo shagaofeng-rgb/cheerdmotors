@@ -7,8 +7,8 @@ import { getStorefrontProduct } from "@/lib/storefrontCatalog";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Checkout | CHEERDMOTO",
-  description: "Create and review a CHEERDMOTO product order.",
+  title: "Checkout | COWIN",
+  description: "Create and review a COWIN product order.",
   alternates: { canonical: absoluteUrl("/checkout") },
   robots: { index: false, follow: false },
 };

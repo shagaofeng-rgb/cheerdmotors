@@ -3,7 +3,7 @@ export default async function AdminLoginPage({ searchParams }: { searchParams: P
   return (
     <main className="admin-login-page">
       <form className="admin-login-card" action="/api/admin/login" method="post">
-        <p className="eyebrow">CHEERDMOTO 后台</p>
+        <p className="eyebrow">COWIN 后台</p>
         <h1>后台登录</h1>
         <p>登录后可管理产品、订单、客户线索、访问统计、转化漏斗和内容数据。</p>
         {query.error ? <strong className="admin-login-error">登录失败，请检查邮箱和密码。</strong> : null}
